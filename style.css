@@ -1,0 +1,18 @@
+.nav-wrapper {
+    right: auto;
+}
+
+.button {
+    
+    position: relative;
+    top: 10px;
+    left: 40px;
+}
+
+.statement {
+    color: white;
+    position: relative;
+    top: 10px;
+    left: 40px;
+    font-size: 25px;
+}
