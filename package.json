@@ -1,0 +1,22 @@
+{
+  "name": "menu_organizer",
+  "version": "1.0.0",
+  "description": "This is the Menu Organizer that I am building for the Web App Development course. Students can log &amp; order their desired menu using this website that will allow me to tell which lunch menu I should make for them as a part of my lunch business.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smkim0508/Menu_Organizer.git"
+  },
+  "author": "Sungmin Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smkim0508/Menu_Organizer/issues"
+  },
+  "homepage": "https://github.com/smkim0508/Menu_Organizer#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
