@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="menu.css">
 </head>
 <body>
-    <div class="container">
-    <div class="section">
+<div class="container">
+    <div class="section" id="MenuList">
+        <h2>Your Order!</h2>
     <table>
         <div class = "center">
         <thead>
@@ -59,7 +60,30 @@
         </div>
     </table>
     </div>
+    <div class="section" id="AddMenu">
+        <h2>Place New Order:</h2>
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s6">
+                
+                    <label for="menu_item">Item Name</label>
+                    <input type="text" name="menu_item" class="validate" data-length="32" required>
+
+                </div>
+                <div class="input-field col s6">
+                
+                    <label for="quantity">Quantity</label>
+                    <input type="number" name="quantity" class="validate" value="1" required>
+                    
+                </div>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">
+                <i class="material-icons right">send</i>Submit</button>
+        </form>
     </div>
+</div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script> M.AutoInit();</script>
 </body>
 </html>
