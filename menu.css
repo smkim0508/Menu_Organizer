@@ -1,3 +1,16 @@
 .center{
     text-align: center;
 }
+
+.input-color{
+    /* color: #FFF8DC; */
+    color: #F0F8FF;
+}
+
+.textarea:focus, input:focus {
+    color: #F0F8FF;
+}
+
+.input, select, textarea{
+    color: #F0F8FF;
+}
