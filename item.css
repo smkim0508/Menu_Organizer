@@ -1,3 +1,13 @@
 .description {
     vertical-align: top;
 }
+
+.modal {
+    left: 0;
+    right: 0;
+    background-color: #fafafa;
+    padding: 0;
+    max-height: 40%;
+    width: 23%;
+    will-change: top, opacity;
+}

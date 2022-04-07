@@ -19,7 +19,6 @@
                         
                         <td><b>Item</b></td>
                         <td><b>Price</b></td>
-                        <td><b>Quantity</b></td>
                         <td><b>Calories (per item)</b></td>
                         
                     </tr>
@@ -28,7 +27,6 @@
                     <tr>
                         <td>Hamburger</td>
                         <td>$5</td>
-                        <td>1</td>
                         <td>500 kcal</td>
                         
                     </tr>
@@ -46,6 +44,49 @@
                 </tbody>
             </table>
         </div>
+        <div container>
+        <div class = "col s4"><p><b>Quantity:</b></p></div>
+        <div class = "col s4"><p>1</p></div>
+        </div>
+        <div class="section" id="orderEdit">
+            <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
+                <i class="material-icons right">edit</i>Edit
+            </a>
+            <a class="btn-large waves-effect waves-light red right">
+                <i class="material-icons right">delete</i>Delete Order
+            </a>
+        </div>
+
+
+        <div class="modal" id="itemEdit">
+
+            <div class="modal-content">
+
+                <h4>Edit Order:</h4>
+                <form>
+                    <div class="row">
+                    
+                        <div class="input-field col s6">
+                            <label for="quantity">Item Quantity:</label>
+                            <input type="number" name="quantity" value=1 required>
+                        </div>
+                    </div>
+                   
+                    <!-- <div class="modal-footer"></div> -->
+                        <button class="btn waves-effect waves-light " type="submit"><i
+                                class="material-icons right">send</i>Change</button>
+
+                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Exit</a>
+                    <!-- </div> -->
+                </form>
+            </div>
+
+        </div>
     </div>
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- initialize Materialize elements -->
+    <script> M.AutoInit();</script>
 </body>
 </html>
