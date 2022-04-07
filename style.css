@@ -1,18 +1,22 @@
-.nav-wrapper {
-    right: auto;
-}
+/* .nav-wrapper { */
+    /* right: auto; */
+/* } */
 
 .button {
     
     position: relative;
     top: 10px;
-    left: 40px;
+    left: 0px;
 }
 
 .statement {
     color: white;
     position: relative;
     top: 10px;
-    left: 40px;
+    left: 0px;
     font-size: 25px;
+}
+
+.buffer {
+    padding-top: 250px;
 }
