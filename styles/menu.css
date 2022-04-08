@@ -7,10 +7,10 @@
     color: #F0F8FF;
 }
 
-.textarea:focus, input:focus {
+textarea:focus, input:focus {
     color: #F0F8FF;
 }
 
-.input, select, textarea{
+input, select, textarea{
     color: #F0F8FF;
 }
