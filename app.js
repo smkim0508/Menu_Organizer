@@ -13,7 +13,7 @@ app.get( "/", ( req, res ) => {
 } );
 
 // define a route for the stuff inventory page
-app.get( "/item", ( req, res ) => {
+app.get( "/menu/item", ( req, res ) => {
 
     res.sendFile( __dirname + "/views/item.html" );
 } );
