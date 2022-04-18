@@ -14,3 +14,7 @@ textarea:focus, input:focus {
 input, select, textarea{
     color: #F0F8FF;
 }
+
+.request-color{
+    color: #8c8c8c;
+}
