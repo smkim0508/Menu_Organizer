@@ -7,7 +7,19 @@
     right: 0;
     background-color: #fafafa;
     padding: 0;
-    max-height: 40%;
-    width: 23%;
+    max-height: 50%;
+    width: 40%;
     will-change: top, opacity;
 }
+
+/* .item-image { */
+
+    /* height: 200px; */
+    /* width: 200px; */
+
+/* } */
+
+/* .img{ */
+    /* width: auto; */
+    /* max-height: 100%; */
+/* } */

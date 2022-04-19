@@ -17,7 +17,9 @@
             <h2> Menu Details: </h2>
             </div>
             <div class="row">
-                <img src="/public/burger_image.jpg" alt="burger">
+                <div class="item-image">
+                <img src="/images/burger_image.jpg" alt="burger">
+                </div>
             </div>
             <table>
                 <thead>
@@ -53,6 +55,8 @@
         <div container>
         <div class = "col s4"><p><b>Quantity:</b></p></div>
         <div class = "col s4"><p>1</p></div>
+        <div class = "col s8"><p><b>Special Requests:</b></p></div>
+        <div class = "col s8"><p>No onions</p></div>
         </div>
         <div class="section" id="orderEdit">
             <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
@@ -78,6 +82,12 @@
                             <input type="number" name="quantity" value=1 required>
                         </div>
                     </div>
+  
+                        <div class="input-field col s10">
+                            <label for="request">Special Requests:</label>
+                            <input type="text" name="request" data-length="100">
+                        </div>
+              
                    
                     <!-- <div class="modal-footer"></div> -->
                         <button class="btn waves-effect waves-light " type="submit"><i
