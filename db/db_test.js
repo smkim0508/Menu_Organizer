@@ -6,7 +6,7 @@ db.execute('SELECT 1+1 AS solution',
         if (error)
             throw error;
         console.log(results);
-        console.log('Solution: ${results[0].solution}');
+        console.log(`Solution: ${results[0].solution}`);
         // console.log(results[0].solution);
     }
 );
