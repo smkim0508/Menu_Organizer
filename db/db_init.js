@@ -2,7 +2,6 @@ const db = require("./db_connection");
 
 //delete the table if it already exists
 
-// const drop_tuff_table_sq1 = "DROP";
 const drop_orders_table_sql = "DROP TABLE IF EXISTS `orders`;"
 
 db.execute(drop_orders_table_sql);
