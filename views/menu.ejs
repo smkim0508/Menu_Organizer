@@ -24,39 +24,22 @@
             </tr>
         </thead>
         <tbody>
+            <% for(let i = 0; i < inventory.length; i++) { %>
             <tr>
-                <td>Burger</td>
+                <td><%= inventory[i].item %></td>
+                <!-- <td><%= inventory[i].price %></td> -->
                 <td>$5</td>
-                <td>1</td>
+                <td><%= inventory[i].quantity %></td>
                 <td>
-                    <a class="btn-small waves-effect waves-light orange" href="/menu/item"><i
+                    <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=inventory[i].id %>"><i
                             class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red"><i
+                    <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=inventory[i].id %>/delete"><i
                             class="material-icons right">delete</i>Delete</a>
                 </td>
             </tr>
-            <tr>
-                <td>Pizza</td>
-                <td>$5</td>
-                <td>1</td>
-                <td>
-                    <a class="btn-small waves-effect waves-light orange" href="/menu/item"><i
-                            class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red"><i
-                            class="material-icons right">delete</i>Delete</a>
-                </td>
-            </tr>
-            <tr>
-                <td>Milkshake</td>
-                <td>$3</td>
-                <td>2</td>
-                <td>
-                    <a class="btn-small waves-effect waves-light orange" href="/menu/item"><i
-                            class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red"><i
-                            class="material-icons right">delete</i>Delete</a>
-                </td>
-            </tr>
+
+            <% } %>
+
         </tbody>
         </div>
     </table>

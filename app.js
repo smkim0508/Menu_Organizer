@@ -33,9 +33,28 @@ app.get("/menu", (req, res ) => {
         if (error)
             res.status(500).send(error); //internal server error
         else
-            res.send(results);
+            res.render("menu", { inventory : results });
+       
     })
 } );
+
+const delete_orders_sql = `
+    DELETE
+    FROM
+        orders
+    WHERE
+        id = ?
+`
+
+app.get("/menu/item/:id/delete", (req, res ) => {
+    db.execute(delete_orders_sql, [req.params.id], ( error, results ) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            res.redirect("/menu");
+        }
+    })
+})
 
 const read_orders_item_sql = `
     SELECT
@@ -43,7 +62,7 @@ const read_orders_item_sql = `
     FROM
         orders
     WHERE
-    id = ?
+        id = ?
 `
 //define a route for the item detail page
 app.get( "/menu/item/:id", (req, res ) => {
@@ -52,7 +71,12 @@ app.get( "/menu/item/:id", (req, res ) => {
             res.status(500).send(error); //internal service error
         else if (results.length == 0)
             res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
-        else    res.send(results[0]);
+        else {
+            let data = results[0];
+            //{ item: ____, quality: ____, requests: ____}
+            res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
+        }
+        // res.send(results[0]);
     })
 }); 
 
