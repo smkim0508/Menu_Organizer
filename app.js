@@ -10,6 +10,9 @@ app.set("view engine", "ejs");
 
 const db = require('./db/db_connection')
 
+//define middleware to handle POST requests (configure express to parse URL-encoded POST request bodies)
+app.use( express.urlencoded({extended : false}));
+
 // define middleware that logs all incoming requests
 app.use(logger("dev"));
 
@@ -52,6 +55,73 @@ app.get("/menu/item/:id/delete", (req, res ) => {
             res.status(500).send(error);
         else {
             res.redirect("/menu");
+        }
+    })
+})
+
+//TEST
+// const create_item_sql = `
+// INSERT INTO orders
+//     (quantity, request)
+// VALUES
+//     (?, ?)
+// `
+
+const create_item_sql = `
+INSERT INTO orders
+    (menu_item, quantity, request)
+VALUES
+    (?, ?, ?)
+`
+
+// TEST
+// app.post("/menu", (req, res) => {
+//     // follows the "name" specified in the form function
+//     // req.body.menu_item
+//     // req.body.quantity
+//     // req.body.request 
+//     db.execute(create_item_sql, [req.body.quantity, req.body.request], (error, results) => {
+//         if (error)
+//             res.status(500).send(error); //internal server error
+//         else {
+//             res.redirect('/menu');
+//         }
+//     })
+// })
+
+app.post("/menu", (req, res) => {
+    // follows the "name" specified in the form function
+    // req.body.menu_item
+    // req.body.quantity
+    // req.body.request 
+    db.execute(create_item_sql, [req.body.menu_item, req.body.quantity, req.body.request], (error, results) => {
+        if (error)
+            res.status(500).send(error); //internal server error
+        else {
+            res.redirect('/menu');
+        }
+    })
+})
+
+const update_item_sql = `
+    UPDATE
+        stuff
+    SET
+        quantity =?,
+        request =?
+    WHERE
+        id = ?
+`
+
+app.post("/stuff/item/:id", (req,res) => {
+    //req.params.id
+    //req.body.quantity
+    //req.body.request
+    db.execute(update_item_sql, [req.body.quantity, req.body.request], (error, results) => {
+        if (error)
+            res.status(500).send(error); //internal server error
+        else {
+            res.redirect(`/menu/item/${req.params.id}`);
         }
     })
 })

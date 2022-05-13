@@ -63,7 +63,7 @@
             <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
                 <i class="material-icons right">edit</i>Edit
             </a>
-            <a class="btn-large waves-effect waves-light red middle">
+            <a class="btn-large waves-effect waves-light red middle" href="/menu/item/<%= id %>/delete">
                 <i class="material-icons right">delete</i>Delete Order
             </a>
             <a class="btn-large waves-effect waves-light blue right" href="/views/menu"> 
@@ -78,7 +78,8 @@
                 <div class="black-text">
                 <h4>Edit Order:</h4>
                 </div>
-                <form>
+                  <!-- form here -->
+                <form method="post" action="/menu/items/<%= id %>"> 
                     <div class="row">
                     
                         <div class="input-field col s6">
