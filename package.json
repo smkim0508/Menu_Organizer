@@ -4,7 +4,9 @@
   "description": "This is the Menu Organizer that I am building for the Web App Development course. Students can log &amp; order their desired menu using this website that will allow me to tell which lunch menu I should make for them as a part of my lunch business.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "devstart": "nodemon -e js,ejs,sql,env app.js",
+    "initdb": "node db/db_init.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,8 @@
     "express": "^4.17.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
