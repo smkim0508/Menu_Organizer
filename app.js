@@ -105,19 +105,19 @@ app.post("/menu", (req, res) => {
 
 const update_item_sql = `
     UPDATE
-        stuff
+        orders
     SET
         quantity =?,
-        request =?
+        requests =?
     WHERE
         id = ?
 `
 
-app.post("/stuff/item/:id", (req,res) => {
+app.post("/menu/item/:id", (req,res) => {
     //req.params.id
     //req.body.quantity
     //req.body.request
-    db.execute(update_item_sql, [req.body.quantity, req.body.request], (error, results) => {
+    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.params.id], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
         else {
@@ -150,7 +150,7 @@ app.get( "/menu/item/:id", (req, res ) => {
     })
 }); 
 
-// define a route for the stuff inventory page
+// define a route for the menu inventory page
 app.get( "/menu/item", ( req, res ) => {
 
     res.sendFile( __dirname + "/views/item.html" );
