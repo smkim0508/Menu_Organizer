@@ -24,11 +24,11 @@ const insert_orders_table_sql = `
     VALUES 
         (?, ?, ?);
 `
-
-db.execute(insert_orders_table_sql, ["Widgets", "5", "Widgets are cool!"]);
-db.execute(insert_orders_table_sql, ["Gizmos", "100", null]);
-db.execute(insert_orders_table_sql, ['Thingamajig', '12345', 'Not to be confused with a Thingamabob']);
-db.execute(insert_orders_table_sql, ['Thingamabob', '54321', 'Not to be confused with a Thingamajig']);
+//sample items in the database
+db.execute(insert_orders_table_sql, ["Hamburger", "5", "Widgets are cool!"]);
+db.execute(insert_orders_table_sql, ["Pizza", "100", null]);
+db.execute(insert_orders_table_sql, ['Soda', '12345', 'Not to be confused with a Thingamabob']);
+db.execute(insert_orders_table_sql, ['Cookie', '54321', 'Not to be confused with a Thingamajig']);
 
 const read_orders_table_sql = "SELECT * FROM orders";
 

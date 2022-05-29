@@ -8,7 +8,7 @@ const port = 8080;
 app.set("views", __dirname + "/views")
 app.set("view engine", "ejs");
 
-const db = require('./db/db_connection')
+const db = require('./db/db_pool')
 
 //define middleware to handle POST requests (configure express to parse URL-encoded POST request bodies)
 app.use( express.urlencoded({extended : false}));
@@ -24,15 +24,32 @@ app.get( "/", ( req, res ) => {
     res.render('index');
 } );
 
-const read_orders_all_sql = `
+// const read_orders_all_sql = `
+//     SELECT
+//         id, item, quantity, requests
+//     FROM
+//         orders
+// `
+const read_combined_all_sql = `
     SELECT
-        id, item, quantity, requests
+        orders.id, orders.item, orders.quantity, menu.price
     FROM
         orders
+    INNER JOIN
+        menu ON orders.item = menu.menu_item
 `
+// app.get("/menu", (req, res ) => {
+//     db.execute(read_orders_all_sql, (error, results) => {
+//         if (error)
+//             res.status(500).send(error); //internal server error
+//         else
+//             res.render("menu", { inventory : results });
+       
+//     })
+// } );
 
 app.get("/menu", (req, res ) => {
-    db.execute(read_orders_all_sql, (error, results) => {
+    db.execute(read_combined_all_sql, (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
         else
@@ -59,42 +76,19 @@ app.get("/menu/item/:id/delete", (req, res ) => {
     })
 })
 
-//TEST
-// const create_item_sql = `
-// INSERT INTO orders
-//     (quantity, request)
-// VALUES
-//     (?, ?)
-// `
-
 const create_item_sql = `
 INSERT INTO orders
-    (menu_item, quantity, request)
+    (item, quantity, requests)
 VALUES
     (?, ?, ?)
 `
 
-// TEST
-// app.post("/menu", (req, res) => {
-//     // follows the "name" specified in the form function
-//     // req.body.menu_item
-//     // req.body.quantity
-//     // req.body.request 
-//     db.execute(create_item_sql, [req.body.quantity, req.body.request], (error, results) => {
-//         if (error)
-//             res.status(500).send(error); //internal server error
-//         else {
-//             res.redirect('/menu');
-//         }
-//     })
-// })
-
 app.post("/menu", (req, res) => {
     // follows the "name" specified in the form function
-    // req.body.menu_item
+    // req.body.item
     // req.body.quantity
     // req.body.request 
-    db.execute(create_item_sql, [req.body.menu_item, req.body.quantity, req.body.request], (error, results) => {
+    db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
         else {
@@ -125,30 +119,59 @@ app.post("/menu/item/:id", (req,res) => {
         }
     })
 })
-
-const read_orders_item_sql = `
+// OLD reading items code
+// const read_orders_item_sql = `
+//     SELECT
+//         id, item, quantity, requests
+//     FROM
+//         orders
+//     WHERE
+//         id = ?
+// `
+const read_combined_item_sql =`
     SELECT
-        id, item, quantity, requests
+        orders.id, orders.item, orders.quantity, orders.requests, menu.id, menu.menu_item, menu.price, menu.calories, menu.description
     FROM
         orders
+    INNER JOIN
+        menu ON orders.item = menu.menu_item
     WHERE
-        id = ?
+        orders.id = ?
 `
+// // OLD read details to items page
+// app.get( "/menu/item/:id", (req, res ) => {
+//     db.execute(read_orders_item_sql, [req.params.id], (error, results) => {
+//         if(error)
+//             res.status(500).send(error); //internal service error
+//         else if (results.length == 0)
+//             res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
+//         else {
+//             let data = results[0];
+//             // console.log(data);
+//             //{ item: ____, quality: ____, requests: ____}
+//             res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
+//         }
+//         // res.send(results[0]);
+//     })
+// });
+
 //define a route for the item detail page
 app.get( "/menu/item/:id", (req, res ) => {
-    db.execute(read_orders_item_sql, [req.params.id], (error, results) => {
+    db.execute(read_combined_item_sql, [req.params.id], (error, results) => {
         if(error)
             res.status(500).send(error); //internal service error
         else if (results.length == 0)
             res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
         else {
             let data = results[0];
+            console.log("success");
+            // console.log(data);
             //{ item: ____, quality: ____, requests: ____}
             res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
         }
         // res.send(results[0]);
     })
-}); 
+});
 
 // define a route for the menu inventory page
 app.get( "/menu/item", ( req, res ) => {
@@ -162,17 +185,6 @@ app.get( "/menu", ( req, res ) => {
     res.sendFile( __dirname + "/views/menu.html" );
 } );
 
-// app.get("/style.css", (req, res) => {
-    // res.sendFile( __dirname + "/styles/style.css");
-// })
-
-// app.get("/menu.css", (req, res) => {
-    // res.sendFile( __dirname + "/styles/menu.css");
-// })
-
-// app.get("/item.css", (req, res) => {
-    // res.sendFile( __dirname + "/styles/item.css" );
-// })
 // start the server
 app.listen( port, () => {
     console.log(`App server listening on ${ port }. (Go to http://localhost:${ port })` );

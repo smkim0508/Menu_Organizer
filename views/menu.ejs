@@ -27,8 +27,7 @@
             <% for(let i = 0; i < inventory.length; i++) { %>
             <tr>
                 <td><%= inventory[i].item %></td>
-                <!-- <td><%= inventory[i].price %></td> -->
-                <td>$5</td>
+                <td>$<%= inventory[i].price %></td>
                 <td><%= inventory[i].quantity %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=inventory[i].id %>"><i
@@ -52,7 +51,7 @@
                 <div class="input-field col s6">
                 
                     <label for="menu_item"><div class="input-color">Item Name</div></label>
-                    <input type="text" name="menu_item" class="validate" data-length="32" color="white" required>
+                    <input type="text" name="item" class="validate" data-length="32" color="white" required>
 
                 </div>
                 <div class="input-field col s6">
@@ -64,8 +63,8 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <label for="request"><div class="input-color">Special Requests</div></label>
-                    <input type="text" name="request" class="validate" data-length="100" color="white">
+                    <label for="requests"><div class="input-color">Special Requests</div></label>
+                    <input type="text" name="requests" class="validate" data-length="100" color="white">
                 </div>
             </div>
             <div class="row">

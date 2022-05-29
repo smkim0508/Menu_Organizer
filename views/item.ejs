@@ -35,8 +35,8 @@
                     <tr>
                         <!-- <td>Hamburger</td> -->
                         <td><%= item %></td>
-                        <td>$5</td>
-                        <td>500 kcal</td>
+                        <td>$<%= price %></td>
+                        <td><%= calories %> kcal</td>
                         
                     </tr>
                 </tbody>
@@ -49,7 +49,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</td>
+                    <td><%= description %></td>
                 </tbody>
             </table>
         </div>
@@ -66,11 +66,10 @@
             <a class="btn-large waves-effect waves-light red middle" href="/menu/item/<%= id %>/delete">
                 <i class="material-icons right">delete</i>Delete Order
             </a>
-            <a class="btn-large waves-effect waves-light blue right" href="/views/menu"> 
+            <a class="btn-large waves-effect waves-light blue right" href="/menu"> 
                 <i class="material-icons right">keyboard_backspace</i>Return
             </a>
         </div>
-
 
         <div class="modal" id="itemEdit">
 
