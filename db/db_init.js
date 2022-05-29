@@ -8,11 +8,11 @@ db.execute(drop_orders_table_sql);
 
 const create_orders_table_sql = `
 CREATE TABLE orders ( 
-    id INT NOT NULL AUTO_INCREMENT, 
+    order_id INT NOT NULL AUTO_INCREMENT, 
     item VARCHAR(45) NOT NULL, 
     quantity INT NOT NULL, 
     requests VARCHAR(150) NULL, 
-    PRIMARY KEY (id)
+    PRIMARY KEY (order_id)
     );
 `
 

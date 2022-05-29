@@ -6,12 +6,12 @@ db.execute(drop_menu_table_sql);
 
 const create_menu_table_sql = `
 CREATE TABLE menu ( 
-    id INT NOT NULL AUTO_INCREMENT, 
+    menu_id INT NOT NULL AUTO_INCREMENT, 
     menu_item VARCHAR(45) NOT NULL, 
     price INT NOT NULL, 
     calories INT NOT NULL,
     description VARCHAR(150) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (menu_id)
     );
 `
 
@@ -28,6 +28,7 @@ db.execute(insert_menu_table_sql, ["Hamburger", "5", "500", "This is a burger"])
 db.execute(insert_menu_table_sql, ["Pizza", "5", "450", "This is a pizza"]);
 db.execute(insert_menu_table_sql, ["Cookie", "2", "200", "This is a cookie"]);
 db.execute(insert_menu_table_sql, ["Soda", "1", "100", "This is a can of soda"]);
+db.execute(insert_menu_table_sql, ["Bread", "2", "300", "This is a loaf of bread"]);
 
 const read_menu_table_sql = "SELECT * FROM menu";
 

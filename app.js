@@ -24,6 +24,10 @@ app.get( "/", ( req, res ) => {
     res.render('index');
 } );
 
+app.get( "/menu/no_match", ( req, res ) => {
+    res.render('no_match');
+} );
+
 // const read_orders_all_sql = `
 //     SELECT
 //         id, item, quantity, requests
@@ -32,7 +36,7 @@ app.get( "/", ( req, res ) => {
 // `
 const read_combined_all_sql = `
     SELECT
-        orders.id, orders.item, orders.quantity, menu.price
+        orders.order_id, orders.item, orders.quantity, menu.price
     FROM
         orders
     INNER JOIN
@@ -63,7 +67,7 @@ const delete_orders_sql = `
     FROM
         orders
     WHERE
-        id = ?
+        order_id = ?
 `
 
 app.get("/menu/item/:id/delete", (req, res ) => {
@@ -83,19 +87,49 @@ VALUES
     (?, ?, ?)
 `
 
+const check_item_match_sql = `
+    SELECT
+        menu_item
+    FROM
+        menu
+    WHERE
+        menu_item = ?
+`
+
 app.post("/menu", (req, res) => {
     // follows the "name" specified in the form function
     // req.body.item
     // req.body.quantity
-    // req.body.request 
-    db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
+    db.execute(check_item_match_sql, [req.body.item], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
+        else if (results.length == 0)
+            // res.status(404).send(`Please choose an item from the menu!`)
+            res.redirect('/menu/no_match');
         else {
-            res.redirect('/menu');
+            db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
+                if (error)
+                    res.status(500).send(error); //internal server error
+                else {
+                    res.redirect('/menu');
+                }
+            })
         }
     })
 })
+
+// app.post("/menu", (req, res) => {
+//     // follows the "name" specified in the form function
+//     // req.body.item
+//     // req.body.quantity
+//     db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
+//         if (error)
+//             res.status(500).send(error); //internal server error
+//         else {
+//             res.redirect('/menu');
+//         }
+//     })
+// })
 
 const update_item_sql = `
     UPDATE
@@ -104,7 +138,7 @@ const update_item_sql = `
         quantity =?,
         requests =?
     WHERE
-        id = ?
+        order_id = ?
 `
 
 app.post("/menu/item/:id", (req,res) => {
@@ -130,13 +164,13 @@ app.post("/menu/item/:id", (req,res) => {
 // `
 const read_combined_item_sql =`
     SELECT
-        orders.id, orders.item, orders.quantity, orders.requests, menu.id, menu.menu_item, menu.price, menu.calories, menu.description
+        orders.order_id, orders.item, orders.quantity, orders.requests, menu.menu_id, menu.menu_item, menu.price, menu.calories, menu.description
     FROM
         orders
     INNER JOIN
         menu ON orders.item = menu.menu_item
     WHERE
-        orders.id = ?
+        orders.order_id = ?
 `
 // // OLD read details to items page
 // app.get( "/menu/item/:id", (req, res ) => {
@@ -164,7 +198,7 @@ app.get( "/menu/item/:id", (req, res ) => {
             res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
         else {
             let data = results[0];
-            console.log("success");
+            console.log("successfully rendered");
             // console.log(data);
             //{ item: ____, quality: ____, requests: ____}
             res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
