@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/menu.css">
+</head>
+<body class="orange lighten-2">
+<div class="white-text">
+<div class="container">
+    <div class="section" id="MenuList">
+        <h2>Edit Menu:</h2>
+    <table>
+        <div class = "center">
+        <thead>
+            <tr>
+                <th>Menu</th>
+                <th>Price</th>
+                <th>Calories</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i = 0; i < inventory.length; i++) { %>
+            <tr>
+                <td><%= inventory[i].menu_item %></td>
+                <td>$<%= inventory[i].price %></td>
+                <td><%= inventory[i].calories %></td>
+                <td><%= inventory[i].description %></td>
+                <td>
+                    <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=inventory[i].menu_id %>"><i
+                            class="material-icons right">edit</i>Edit</a>
+                    <a class="btn-small waves-effect waves-light red" href="/edit/item/<%=inventory[i].menu_id %>/delete"><i
+                            class="material-icons right">delete</i>Delete</a>
+                </td>
+            </tr>
+
+            <% } %>
+
+        </tbody>
+        </div>
+    </table>
+    </div>
+    <div class="section" id="EditMenu">
+        <h2>Add New Menu:</h2>
+        <!-- form here -->
+        <form class="col s12" method="post">
+            <div class="row">
+                <div class="input-field col s4">
+                
+                    <label for="menu_item"><div class="input-color">Menu Name</div></label>
+                    <input type="text" name="menu" class="validate" data-length="32" color="white" required>
+
+                </div>
+                <div class="input-field col s4">
+                
+                    <label for="price"><div class="input-color">Price ($)</div></label>
+                    <input type="number" name="price" class="validate" value="5" required>
+                    
+                </div>
+                <div class="input-field col s4">
+                
+                    <label for="calories"><div class="input-color">Calories (Kcal)</div></label>
+                    <input type="number" name="calories" class="validate" value="100" required>
+                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="description"><div class="input-color">Menu Description</div></label>
+                    <input type="text" name="description" class="validate" data-length="100" color="white">
+                </div>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">
+                <i class="material-icons right">send</i>Submit</button>
+        </form>
+    </div>
+</div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script> M.AutoInit();</script>
+</div>
+</body>
+</html>

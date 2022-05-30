@@ -28,6 +28,7 @@ app.get( "/menu/no_match", ( req, res ) => {
     res.render('no_match');
 } );
 
+
 // const read_orders_all_sql = `
 //     SELECT
 //         id, item, quantity, requests
@@ -60,7 +61,23 @@ app.get("/menu", (req, res ) => {
             res.render("menu", { inventory : results });
        
     })
-} );
+})
+
+const read_edit_menu_sql = `
+    SELECT
+        menu_item, price, calories, description
+    FROM
+        menu
+`
+
+app.get( "/edit", ( req, res ) => {
+    db.execute(read_edit_menu_sql, (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else   
+            res.render("menu_edit", { inventory : results });
+    })
+})
 
 const delete_orders_sql = `
     DELETE
@@ -118,18 +135,22 @@ app.post("/menu", (req, res) => {
     })
 })
 
-// app.post("/menu", (req, res) => {
-//     // follows the "name" specified in the form function
-//     // req.body.item
-//     // req.body.quantity
-//     db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
-//         if (error)
-//             res.status(500).send(error); //internal server error
-//         else {
-//             res.redirect('/menu');
-//         }
-//     })
-// })
+const create_menu_sql = `
+    INSERT INTO menu
+        (menu_item, price, calories, description)
+    VALUES
+        (?, ?, ?, ?)
+`
+
+app.post("/edit", (req, res) => {
+    db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description], (error, results) => {
+        if (error)
+            res.status(500).send(error); //internal server error
+        else {
+            res.redirect('/edit');
+        }
+    })
+})
 
 const update_item_sql = `
     UPDATE
@@ -206,18 +227,6 @@ app.get( "/menu/item/:id", (req, res ) => {
         // res.send(results[0]);
     })
 });
-
-// define a route for the menu inventory page
-app.get( "/menu/item", ( req, res ) => {
-
-    res.sendFile( __dirname + "/views/item.html" );
-} );
-
-// define a route for the item detail page
-app.get( "/menu", ( req, res ) => {
-
-    res.sendFile( __dirname + "/views/menu.html" );
-} );
 
 // start the server
 app.listen( port, () => {
