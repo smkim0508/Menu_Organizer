@@ -36,12 +36,6 @@ app.get( "/edit/no_id_found", ( req, res ) => {
     res.render('no_menu_id_found');
 } );
 
-// const read_orders_all_sql = `
-//     SELECT
-//         id, item, quantity, requests
-//     FROM
-//         orders
-// `
 const read_combined_all_sql = `
     SELECT
         orders.order_id, orders.item, orders.quantity, menu.price
@@ -50,15 +44,6 @@ const read_combined_all_sql = `
     INNER JOIN
         menu ON orders.item = menu.menu_item
 `
-// app.get("/menu", (req, res ) => {
-//     db.execute(read_orders_all_sql, (error, results) => {
-//         if (error)
-//             res.status(500).send(error); //internal server error
-//         else
-//             res.render("menu", { inventory : results });
-       
-//     })
-// } );
 
 app.get("/menu", (req, res ) => {
     db.execute(read_combined_all_sql, (error, results) => {
@@ -176,15 +161,7 @@ app.post("/edit", (req, res) => {
         }
     })
 })
-// OLD reading items code
-// const read_orders_item_sql = `
-//     SELECT
-//         id, item, quantity, requests
-//     FROM
-//         orders
-//     WHERE
-//         id = ?
-// `
+
 const read_combined_item_sql =`
     SELECT
         orders.order_id, orders.item, orders.quantity, orders.requests, menu.menu_id, menu.menu_item, menu.price, menu.calories, menu.description
@@ -195,22 +172,6 @@ const read_combined_item_sql =`
     WHERE
         orders.order_id = ?
 `
-// // OLD read details to items page
-// app.get( "/menu/item/:id", (req, res ) => {
-//     db.execute(read_orders_item_sql, [req.params.id], (error, results) => {
-//         if(error)
-//             res.status(500).send(error); //internal service error
-//         else if (results.length == 0)
-//             res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
-//         else {
-//             let data = results[0];
-//             // console.log(data);
-//             //{ item: ____, quality: ____, requests: ____}
-//             res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
-//         }
-//         // res.send(results[0]);
-//     })
-// });
 
 //define a route for the item detail page
 app.get( "/menu/item/:id", (req, res ) => {
@@ -223,7 +184,6 @@ app.get( "/menu/item/:id", (req, res ) => {
             let data = results[0];
             console.log("successfully rendered");
             // console.log(data);
-            //{ item: ____, quality: ____, requests: ____}
             res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
         }
         // res.send(results[0]);
