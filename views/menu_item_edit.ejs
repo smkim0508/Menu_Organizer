@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item_Name</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/item.css">
+</head>
+<body class="orange lighten-2">
+    <div class="container">
+    <div class="white-text">
+        <div class="section" id="details">
+            <div class="row">
+            <h2> Menu Details: </h2>
+            </div>
+            <div class="row">
+                <div class="item-image">
+                <img src="/images/burger_image.jpg" alt="burger">
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        
+                        <td><b>Menu Name</b></td>
+                        <td><b>Price</b></td>
+                        <td><b>Calories (per item)</b></td>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <!-- <td>Hamburger</td> -->
+                        <td><%= menu_item %></td>
+                        <td>$<%= price %></td>
+                        <td><%= calories %> kcal</td>
+                        
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <td valign="top"><div class = "description"><b>Description</b></div></td>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <td><%= description %></td>
+                </tbody>
+            </table>
+        </div>
+       
+        <div class="section" id="orderEdit">
+            <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
+                <i class="material-icons right">edit</i>Edit
+            </a>
+            <a class="btn-large waves-effect waves-light red middle" href="/edit/item/<%= menu_id %>/delete">
+                <i class="material-icons right">delete</i>Delete Order
+            </a>
+            <a class="btn-large waves-effect waves-light blue right" href="/edit"> 
+                <i class="material-icons right">keyboard_backspace</i>Return
+            </a>
+        </div>
+
+        <div class="modal" id="itemEdit">
+
+            <div class="modal-content">
+                <div class="black-text">
+                <h4>Edit Order:</h4>
+                </div>
+                  <!-- form here -->
+                <form method="post" action="/edit/item/<%= menu_id %>"> 
+                    <!-- <div class="item-image">
+                        <img src="/images/burger_image.jpg" alt="burger">
+                    </div> -->
+                    <div class="row">
+                    
+                        <div class="input-field col s4">
+                            <label for="menu">Menu Name:</label>
+                            <input type="text" name="menu" data-length="45" required>
+                        </div>
+
+                        <div class="input-field col s4">
+                            <label for="price">Price:</label>
+                            <input type="number" name="price" value="5" required>
+                        </div>
+
+                        <div class="input-field col s4">
+                            <label for="calories">Calories:</label>
+                            <input type="number" name="calories" value="100" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s10">
+                            <label for="description">Description:</label>
+                            <input type="text" name="description" data-length="150">
+                        </div>
+                    
+                    </div>
+  
+                    <!-- <div class="modal-footer"></div> -->
+                        <button class="btn waves-effect waves-light " type="submit"><i
+                                class="material-icons right">send</i>Change</button>
+
+                        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Exit</a>
+                    <!-- </div> -->
+                </form>
+            </div>
+
+        </div>
+        </div>
+    </div>
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- initialize Materialize elements -->
+    <script> M.AutoInit();</script>
+</body>
+</html>

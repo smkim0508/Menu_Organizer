@@ -65,7 +65,7 @@ app.get("/menu", (req, res ) => {
 
 const read_edit_menu_sql = `
     SELECT
-        menu_item, price, calories, description
+        menu_id, menu_item, price, calories, description
     FROM
         menu
 `
@@ -93,6 +93,24 @@ app.get("/menu/item/:id/delete", (req, res ) => {
             res.status(500).send(error);
         else {
             res.redirect("/menu");
+        }
+    })
+})
+
+const delete_menu_sql = `
+    DELETE
+    FROM
+        menu
+    WHERE
+        menu_id = ?
+`
+
+app.get("/edit/item/:id/delete", (req, res ) => {
+    db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            res.redirect("/edit");
         }
     })
 })
@@ -151,29 +169,6 @@ app.post("/edit", (req, res) => {
         }
     })
 })
-
-const update_item_sql = `
-    UPDATE
-        orders
-    SET
-        quantity =?,
-        requests =?
-    WHERE
-        order_id = ?
-`
-
-app.post("/menu/item/:id", (req,res) => {
-    //req.params.id
-    //req.body.quantity
-    //req.body.request
-    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.params.id], (error, results) => {
-        if (error)
-            res.status(500).send(error); //internal server error
-        else {
-            res.redirect(`/menu/item/${req.params.id}`);
-        }
-    })
-})
 // OLD reading items code
 // const read_orders_item_sql = `
 //     SELECT
@@ -227,6 +222,74 @@ app.get( "/menu/item/:id", (req, res ) => {
         // res.send(results[0]);
     })
 });
+
+const read_edit_item_sql = `
+    SELECT
+        menu_id, menu_item, price, calories, description
+    FROM
+        menu
+    WHERE
+        menu_id = ?
+`
+
+app.get( "/edit/item/:id", (req, res ) => {
+    db.execute(read_edit_item_sql, [req.params.id], (error, results) => {
+        if(error)
+            res.status(500).send(error); //internal service error
+        else if (results.length == 0)
+            res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
+        else {
+            let data = results[0];
+            console.log("successfully rendered edit item page");
+
+            res.render('menu_item_edit', data)
+        }
+    })
+});
+
+const update_item_sql = `
+    UPDATE
+        orders
+    SET
+        quantity = ?,
+        requests = ?
+    WHERE
+        order_id = ?
+`
+
+app.post("/menu/item/:id", (req,res) => {
+    //req.params.id
+    //req.body.quantity
+    //req.body.request
+    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.params.id], (error, results) => {
+        if (error)
+            res.status(500).send(error); //internal server error
+        else {
+            res.redirect(`/menu/item/${req.params.id}`);
+        }
+    })
+})
+
+const update_menu_sql = `
+    UPDATE
+        menu
+    SET
+        menu_item = ?,
+        price = ?,
+        calories = ?,
+        description = ?
+    WHERE
+        menu_id = ?
+`
+app.post("/edit/item/:id", (req,res) => {
+    db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.params.id], (error, results) => {
+        if (error)
+            res.status(500).send(error); //internal server error
+        else {
+            res.redirect(`/edit/item/${req.params.id}`);
+        }
+    })
+})
 
 // start the server
 app.listen( port, () => {
