@@ -18,7 +18,7 @@
             </div>
             <div class="row">
                 <div class="item-image">
-                <img src="/images/<%= menu_item %>.jpg" alt="<%= menu_item %>">
+                <img src="/images/<%= menu_item %>.jpg" width="550" height="400" alt="<%= menu_item %>">
                 </div>
             </div>
             <table>
@@ -81,24 +81,24 @@
                     
                         <div class="input-field col s4">
                             <label for="menu">Menu Name:</label>
-                            <input type="text" name="menu" data-length="45" required>
+                            <input type="text" name="menu" value="<%= menu_item %>" data-length="45" required>
                         </div>
 
                         <div class="input-field col s4">
                             <label for="price">Price:</label>
-                            <input type="number" name="price" value="5" required>
+                            <input type="number" name="price" value="<%= price %>" required>
                         </div>
 
                         <div class="input-field col s4">
                             <label for="calories">Calories:</label>
-                            <input type="number" name="calories" value="100" required>
+                            <input type="number" name="calories" value="<%= calories %>" required>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s10">
                             <label for="description">Description:</label>
-                            <input type="text" name="description" data-length="150">
+                            <input type="text" name="description" value="<%= description %>" data-length="150">
                         </div>
                     
                     </div>
