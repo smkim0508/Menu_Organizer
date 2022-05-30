@@ -28,6 +28,13 @@ app.get( "/menu/no_match", ( req, res ) => {
     res.render('no_match');
 } );
 
+app.get( "/menu/no_id_found", ( req, res ) => {
+    res.render('no_order_id_found');
+} );
+
+app.get( "/edit/no_id_found", ( req, res ) => {
+    res.render('no_menu_id_found');
+} );
 
 // const read_orders_all_sql = `
 //     SELECT
@@ -211,7 +218,7 @@ app.get( "/menu/item/:id", (req, res ) => {
         if(error)
             res.status(500).send(error); //internal service error
         else if (results.length == 0)
-            res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
+            res.redirect('/menu/no_id_found');
         else {
             let data = results[0];
             console.log("successfully rendered");
@@ -237,7 +244,7 @@ app.get( "/edit/item/:id", (req, res ) => {
         if(error)
             res.status(500).send(error); //internal service error
         else if (results.length == 0)
-            res.status(404).send(`No item found with id = ${req.params.id}`) //no page found error
+            res.redirect('/edit/no_id_found');
         else {
             let data = results[0];
             console.log("successfully rendered edit item page");
