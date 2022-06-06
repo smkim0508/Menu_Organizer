@@ -2,7 +2,11 @@
 const express = require( "express" );
 const logger = require ("morgan");
 const app = express();
-const port = 8080;
+
+//set up port
+const dotenv = require('dotenv');
+dotenv.config();
+const port = process.env.PORT;
 
 //configure express to use EJS
 app.set("views", __dirname + "/views")
