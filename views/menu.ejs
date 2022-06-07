@@ -12,6 +12,33 @@
 <body class="teal lighten-2">
 <div class="white-text">
 <div class="container">
+    <div class="section" id="DailyMenu">
+        <h2>Today's Menu:</h2>
+    <table>
+        <div class = "center">
+            <thead>
+                <tr>
+                    <th>Menu</th>
+                    <th>Price (per item)</th>
+                    <th>Calories</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < inventory.length; i++) { %>
+                <tr>
+                    <td><%= inventory[i].menu_item %></td>
+                    <td>$<%= inventory[i].price %></td>
+                    <td><%= inventory[i].calories %></td>
+                    <td><%= inventory[i].description %></td>
+                </tr>
+    
+                <% } %>
+    
+            </tbody>
+        </div>
+    </table>
+    </div>
     <div class="section" id="MenuList">
         <h2>Your Order!</h2>
     <table>
@@ -19,16 +46,16 @@
         <thead>
             <tr>
                 <th>Menu</th>
-                <th>Price</th>
                 <th>Quantity</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
             <% for(let i = 0; i < inventory.length; i++) { %>
             <tr>
                 <td><%= inventory[i].menu_item %></td>
-                <td>$<%= inventory[i].price %></td>
                 <td><%= inventory[i].quantity %></td>
+                <td>$<%= inventory[i].price*inventory[i].quantity %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=inventory[i].order_id %>"><i
                             class="material-icons right">edit</i>Edit</a>

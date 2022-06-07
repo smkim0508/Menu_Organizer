@@ -42,7 +42,7 @@ app.get( "/edit/no_id_found", ( req, res ) => {
 
 const read_combined_all_sql = `
     SELECT
-        orders.order_id, menu.menu_item, orders.quantity, menu.price
+        orders.order_id, orders.item, orders.quantity, orders.requests, menu.menu_id, menu.menu_item, menu.price, menu.calories, menu.description
     FROM
         orders
     INNER JOIN
