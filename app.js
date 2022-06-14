@@ -14,6 +14,21 @@ app.set("view engine", "ejs");
 
 const db = require('./db/db_pool')
 
+//auth 0 stuff
+const { auth } = require('express-openid-connect');
+
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: 'http://localhost:80',
+  clientID: 'pDCzPXPddFBPQWeBXZAXC21IEbxcskGF',
+  issuerBaseURL: 'https://dev-hnm1jfku.us.auth0.com'
+};
+
+// auth router attaches /login, /logout, and /callback routes to the baseURL
+app.use(auth(config));
+
 //define middleware to handle POST requests (configure express to parse URL-encoded POST request bodies)
 app.use( express.urlencoded({extended : false}));
 
@@ -22,6 +37,17 @@ app.use(logger("dev"));
 
 // define middleware that serves static resources in the public directory
 app.use(express.static(__dirname + '/public'));
+
+// req.isAuthenticated is provided from the auth router
+app.get('/testLogin', (req, res) => {
+    res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+  });
+
+const { requiresAuth } = require('express-openid-connect');
+
+app.get('/profile', requiresAuth(), (req, res) => {
+    res.send(JSON.stringify(req.oidc.user));
+});
 
 // define a route for the default home page
 app.get( "/", ( req, res ) => {
@@ -176,6 +202,8 @@ const read_combined_item_sql =`
     WHERE
         orders.order_id = ?
 `
+// SUM(orders.quantity*menu.price)
+// possibly to sum above
 
 //define a route for the item detail page
 app.get( "/menu/item/:id", (req, res ) => {
@@ -258,6 +286,26 @@ app.post("/edit/item/:id", (req,res) => {
             res.status(500).send(error); //internal server error
         else {
             res.redirect(`/edit/item/${req.params.id}`);
+        }
+    })
+})
+
+const order_success_sql = `
+    READ
+        customer_id, order, quantity
+    FROM
+        customers
+    WHERE
+        customer_id = ?
+`
+
+app.get("/success/:customer_id", (req, res) => {
+    db.execute(order_success_sql, [req.params.customer_id], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            let data = results[0];
+            res.render('order_success', data)
         }
     })
 })
