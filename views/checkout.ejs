@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body class = "teal lighten-2">
-    <div class="container">
-    <div class ="center">
+    <div class ="container">
+    <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
-        <h4>Thank you! Your order has been successfully completed. </h4>
+        <p>Your order receipt is shown below.</p>
         <div class="small_buffer"></div>
-        <p>Please contact me if you have any questions or if you'd like to make any changes to your order!</p>
+        <p>Please review your order and make any changes before your final submission.</p>
         </div>
         <div class="table_font">
         <table>
@@ -40,9 +40,31 @@
         </table>
         <h6>Total: $<%= sum %> </h6>
         </div>
-        <div class = "button">
+ 
+        <!-- <table>
+            <tr>
+            <td>
+                <a class="waves-effect waves-light btn-large" href="/menu"><i class="material-icons right">arrow_back</i>return</a>
+            </td>
+            <div class = "horizontal_buffer">
+            <td>
+                .............
+            </td>
+            </div>
+            <td>
+                <a class="waves-effect waves-light btn-large" href="/success"><i class="material-icons right">arrow_forward</i>complete order</a>
+            </td>
+            </tr>
+        </table> -->
+        <div class = "horizontal_buffer">
+            
+        <a class="waves-effect waves-light btn-large" href="/menu"><i class="material-icons right">arrow_back</i>return</a>
+        <p></p>
+        <a class="waves-effect waves-light btn-large" href="/success"><i class="material-icons right">arrow_forward</i>complete order</a>
+        </div>
+        </div>
     </div>
-</div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

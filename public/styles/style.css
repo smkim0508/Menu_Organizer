@@ -20,3 +20,15 @@
 .buffer {
     padding-top: 245px;
 }
+
+.small_buffer {
+    padding-top: 20px;
+}
+
+.table_font {
+    color: white;
+}
+
+.horizontal_buffer {
+    color: #4cb6ac;
+}

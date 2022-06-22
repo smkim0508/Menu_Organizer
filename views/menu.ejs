@@ -12,6 +12,19 @@
 <body class="teal lighten-2">
 <div class="white-text">
 <div class="container">
+        <div class="fixed-action-btn">
+            <div class="tooltip">
+            <a href="/checkout" class="btn-floating btn-large red">
+              <i class="large material-icons">shopping_cart</i>
+            </a>
+            <span class="tooltiptext">checkout</span>
+            </div>
+        </div>
+        <div class="fixed-action-btn" style="bottom: 100px; right: 24px;">
+            <a href="/logout" class="btn-floating btn-large red">
+              <i class="large material-icons">exit_to_app</i>
+            </a>
+        </div>
     <div class="section" id="DailyMenu">
         <h2>Today's Menu:</h2>
     <table>
@@ -40,14 +53,14 @@
     </table>
     </div>
     <div class="section" id="MenuList">
-        <h2>Your Order!</h2>
+        <h2>Orders for <%= username %>:</h2>
     <table>
         <div class = "center">
         <thead>
             <tr>
                 <th>Menu</th>
                 <th>Quantity</th>
-                <th>Total</th>
+                <th>Sum</th>
             </tr>
         </thead>
         <tbody>
@@ -63,13 +76,15 @@
                             class="material-icons right">delete</i>Delete</a>
                 </td>
             </tr>
-
+            
             <% } %>
-            <!-- <tr>Total: $<%= %> </tr>  -->
             <!-- Sum function above -->
         </tbody>
         </div>
     </table>
+    <div class = "buffer">
+    <h6><b>Total:</b> $<%= sum %></h6>
+    </div> 
     </div>
     <div class="section" id="AddMenu">
         <h2>Place New Order:</h2>
@@ -105,9 +120,6 @@
             <button class="btn waves-effect waves-light" type="submit">
                 <i class="material-icons right">send</i>Submit</button>
         </form>
-    </div>
-</div>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script> M.AutoInit();</script>

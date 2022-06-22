@@ -20,10 +20,10 @@ const { auth } = require('express-openid-connect');
 const config = {
   authRequired: false,
   auth0Logout: true,
-  secret: process.env.SECRET,
-  baseURL: 'http://localhost:80',
-  clientID: 'pDCzPXPddFBPQWeBXZAXC21IEbxcskGF',
-  issuerBaseURL: 'https://dev-hnm1jfku.us.auth0.com'
+  secret: process.env.AUTH_SECRET,
+  baseURL: process.env.AUTH_BASE_URL,
+  clientID: process.env.AUTH_CLIENT_ID,
+  issuerBaseURL: process.env.AUTH_ISSUER_BASE_URL
 };
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
@@ -54,15 +54,15 @@ app.get( "/", ( req, res ) => {
     res.render('index');
 } );
 
-app.get( "/menu/no_match", ( req, res ) => {
+app.get( "/menu/no_match", requiresAuth(), ( req, res ) => {
     res.render('no_match');
 } );
 
-app.get( "/menu/no_id_found", ( req, res ) => {
+app.get( "/menu/no_id_found", requiresAuth(), ( req, res ) => {
     res.render('no_order_id_found');
 } );
 
-app.get( "/edit/no_id_found", ( req, res ) => {
+app.get( "/edit/no_id_found", requiresAuth(), ( req, res ) => {
     res.render('no_menu_id_found');
 } );
 
@@ -73,15 +73,34 @@ const read_combined_all_sql = `
         orders
     INNER JOIN
         menu ON orders.item = menu.menu_item
+    WHERE
+        email = ?
 `
 
-app.get("/menu", (req, res ) => {
-    db.execute(read_combined_all_sql, (error, results) => {
+const read_sum_sql =`
+    SELECT
+        SUM(orders.quantity*menu.price) sum 
+    FROM 
+        orders
+    INNER JOIN
+        menu ON orders.item = menu.menu_item
+    WHERE
+        email = ?
+`
+
+app.get("/menu", requiresAuth(), (req, res ) => {
+    db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results) => {
         if (error)
-            res.status(500).send(error); //internal server error
+            res.status(500).send(error);
         else
-            res.render("menu", { inventory : results });
-       
+            db.execute(read_sum_sql, [req.oidc.user.email], (error, results2) => {
+                if (error)
+                    res.status(500).send(error); //internal server error
+                else
+                    // console.log(results2[0])
+                    // console.log(results)
+                    res.render("menu", { inventory : results, username : req.oidc.user.name, sum : results2[0].sum });
+            })
     })
 })
 
@@ -92,7 +111,7 @@ const read_edit_menu_sql = `
         menu
 `
 
-app.get( "/edit", ( req, res ) => {
+app.get( "/edit", requiresAuth(), ( req, res ) => {
     db.execute(read_edit_menu_sql, (error, results) => {
         if (error)
             res.status(500).send(error);
@@ -109,7 +128,7 @@ const delete_orders_sql = `
         order_id = ?
 `
 
-app.get("/menu/item/:id/delete", (req, res ) => {
+app.get("/menu/item/:id/delete", requiresAuth(), (req, res ) => {
     db.execute(delete_orders_sql, [req.params.id], ( error, results ) => {
         if (error)
             res.status(500).send(error);
@@ -127,7 +146,7 @@ const delete_menu_sql = `
         menu_id = ?
 `
 
-app.get("/edit/item/:id/delete", (req, res ) => {
+app.get("/edit/item/:id/delete", requiresAuth(), (req, res ) => {
     db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
         if (error)
             res.status(500).send(error);
@@ -139,9 +158,9 @@ app.get("/edit/item/:id/delete", (req, res ) => {
 
 const create_item_sql = `
 INSERT INTO orders
-    (item, quantity, requests)
+    (item, quantity, requests, email)
 VALUES
-    (?, ?, ?)
+    (?, ?, ?, ?)
 `
 
 const check_item_match_sql = `
@@ -153,7 +172,7 @@ const check_item_match_sql = `
         menu_item = ?
 `
 
-app.post("/menu", (req, res) => {
+app.post("/menu", requiresAuth(), (req, res) => {
     // follows the "name" specified in the form function
     // req.body.item
     // req.body.quantity
@@ -164,7 +183,7 @@ app.post("/menu", (req, res) => {
             // res.status(404).send(`Please choose an item from the menu!`)
             res.redirect('/menu/no_match');
         else {
-            db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests], (error, results) => {
+            db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email], (error, results) => {
                 if (error)
                     res.status(500).send(error); //internal server error
                 else {
@@ -182,7 +201,7 @@ const create_menu_sql = `
         (?, ?, ?, ?)
 `
 
-app.post("/edit", (req, res) => {
+app.post("/edit", requiresAuth(), (req, res) => {
     db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
@@ -201,13 +220,15 @@ const read_combined_item_sql =`
         menu ON orders.item = menu.menu_item
     WHERE
         orders.order_id = ?
+        AND email = ?
 `
 // SUM(orders.quantity*menu.price)
 // possibly to sum above
 
 //define a route for the item detail page
-app.get( "/menu/item/:id", (req, res ) => {
-    db.execute(read_combined_item_sql, [req.params.id], (error, results) => {
+app.get( "/menu/item/:id", requiresAuth(), (req, res ) => {
+    db.execute(read_combined_item_sql, [req.params.id, req.oidc.user.email], (error, results) => {
+
         if(error)
             res.status(500).send(error); //internal service error
         else if (results.length == 0)
@@ -231,7 +252,7 @@ const read_edit_item_sql = `
         menu_id = ?
 `
 
-app.get( "/edit/item/:id", (req, res ) => {
+app.get( "/edit/item/:id", requiresAuth(), (req, res ) => {
     db.execute(read_edit_item_sql, [req.params.id], (error, results) => {
         if(error)
             res.status(500).send(error); //internal service error
@@ -251,16 +272,17 @@ const update_item_sql = `
         orders
     SET
         quantity = ?,
-        requests = ?
+        requests = ?,
+        email = ?
     WHERE
         order_id = ?
 `
 
-app.post("/menu/item/:id", (req,res) => {
+app.post("/menu/item/:id", requiresAuth(), (req,res) => {
     //req.params.id
     //req.body.quantity
     //req.body.request
-    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.params.id], (error, results) => {
+    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.oidc.user.email, req.params.id], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
         else {
@@ -280,7 +302,7 @@ const update_menu_sql = `
     WHERE
         menu_id = ?
 `
-app.post("/edit/item/:id", (req,res) => {
+app.post("/edit/item/:id", requiresAuth(), (req,res) => {
     db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.params.id], (error, results) => {
         if (error)
             res.status(500).send(error); //internal server error
@@ -290,22 +312,71 @@ app.post("/edit/item/:id", (req,res) => {
     })
 })
 
-const order_success_sql = `
-    READ
-        customer_id, order, quantity
+// const order_success_sql = `
+//     READ
+//         customer_id, order, quantity
+//     FROM
+//         customers
+//     WHERE
+//         customer_id = ?
+// `
+
+const read_receipt_sql =`
+    SELECT
+        orders.order_id, orders.item, orders.quantity, menu.menu_id, menu.menu_item, menu.price
     FROM
-        customers
+        orders
+    INNER JOIN
+        menu ON orders.item = menu.menu_item
     WHERE
-        customer_id = ?
+        email = ?
 `
 
-app.get("/success/:customer_id", (req, res) => {
-    db.execute(order_success_sql, [req.params.customer_id], (error, results) => {
+const read_receipt_sum_sql =`
+    SELECT
+        SUM(orders.quantity*menu.price) sum 
+    FROM 
+        orders
+    INNER JOIN
+        menu ON orders.item = menu.menu_item
+    WHERE
+        email = ?
+`
+
+app.get("/checkout", requiresAuth(), (req, res) => {
+    db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
         else {
-            let data = results[0];
-            res.render('order_success', data)
+            db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    console.log(results)
+                    console.log(results2[0].sum)
+                    res.render('checkout', {inventory : results, sum : results2[0].sum })
+                    
+                }
+            })
+        }
+    })
+})
+
+app.get("/success", requiresAuth(), (req, res) => {
+    db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    console.log(results)
+                    console.log(results2[0].sum)
+                    res.render('order_success', {inventory : results, sum : results2[0].sum })
+                    
+                }
+            })
         }
     })
 })
