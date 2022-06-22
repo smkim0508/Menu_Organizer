@@ -14,38 +14,43 @@
     <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
-        <p>Your order receipt is shown below.</p>
+        <p>User list</p>
         <div class="small_buffer"></div>
-        <p>Please review your order and make any changes before your final submission.</p>
         </div>
         <div class="table_font">
         <table>
         <thead>
             <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Sum</th>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>Is Admin?</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < userlist.length; i++) { %>
             <tr>
-                <td><%= inventory[i].menu_item %></td>
-                <td><%= inventory[i].quantity %></td>
-                <td>$<%= inventory[i].price*inventory[i].quantity %></td>
+                <td><%= userlist[i].user_id %></td>
+                <td><%= userlist[i].email %></td>
+                <td><%= userlist[i].isAdmin %></td>
+                <td>
+                    <a class="btn-small waves-effect waves-light green" href="/admin_edit/<%=userlist[i].user_id %>/promote"><i
+                            class="material-icons right">arrow_upward</i>Promote</a>
+                    <a class="btn-small waves-effect waves-light orange" href="/admin_edit/<%=userlist[i].user_id %>/demote"><i
+                            class="material-icons right">arrow_downward</i>Demote</a>
+                    <a class="btn-small waves-effect waves-light red" href="/admin_edit/<%=userlist[i].user_id %>/delete"><i
+                        class="material-icons right">delete</i>Delete User</a>
+                </td>
             </tr>
 
             <% } %>
         </tbody>
         </table>
-        <h6>Total: $<%= sum %> </h6>
+  
         </div>
         <div class = "horizontal_buffer">
-            
             <table>
-                <td> <a class="waves-effect waves-light btn-large" href="/menu"><i class="material-icons right">arrow_back</i>return</a>
-                    <p></p>
-                    <a class="waves-effect waves-light btn-large" href="/success"><i class="material-icons right">arrow_forward</i>complete order</a>
+                <td> <a class="waves-effect waves-light btn-large" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
                 </td>
             </table>
         </div>

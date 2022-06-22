@@ -116,7 +116,7 @@ app.get("/menu", requiresAuth(), (req, res ) => {
                     res.status(500).send(error); //internal server error
                 else {
                     res.render('menu', { inventory : results, username : req.oidc.user.name, sum : results2[0].sum });
-                    console.log("render is fine")
+                    // console.log("render successful")
                     db.execute(check_user_match_sql, [req.oidc.user.email], (error, results3) => {
                         if (error)
                             res.status(500).send(error);
@@ -154,10 +154,20 @@ app.get("/menu", requiresAuth(), (req, res ) => {
 
 const read_admin_sql = `
     SELECT
-        email, isAdmin
+        user_id, email, isAdmin
     FROM
         users
 `
+
+app.get("/admin_edit", requiresAuth(), (req, res) => {
+    db.execute(read_admin_sql, (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else
+            res.render("admin_control", { userlist : results })
+    })
+})
+
 const read_edit_menu_sql = `
     SELECT
         menu_id, menu_item, price, calories, description
@@ -200,12 +210,66 @@ const delete_menu_sql = `
         menu_id = ?
 `
 
-app.get("/edit/item/:id/delete", requiresAuth(), (req, res ) => {
+app.get("/edit/item/:id/delete", requiresAuth(), (req, res) => {
     db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
         if (error)
             res.status(500).send(error);
         else {
             res.redirect("/edit");
+        }
+    })
+})
+
+const delete_user_sql=`
+    DELETE
+    FROM
+        users
+    WHERE
+        user_id = ?
+`
+
+app.get("/admin_edit/:id/delete", requiresAuth(), (req, res) => {
+    db.execute(delete_user_sql, [req.params.id], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            res.redirect("/admin");
+        }
+    })
+})
+
+const promote_admin_sql=`
+    UPDATE
+        users
+    SET
+        isAdmin = 1
+    WHERE
+        user_id = ?
+`
+app.get("/admin_edit/:id/promote", requiresAuth(), (req, res) => {
+    db.execute(promote_admin_sql, [req.params.id], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            res.redirect("/admin");
+        }
+    })
+})
+
+const demote_admin_sql=`
+    UPDATE
+        users
+    SET
+        isAdmin = 0
+    WHERE
+        user_id = ?
+`
+app.get("/admin_edit/:id/demote", requiresAuth(), (req, res) => {
+    db.execute(demote_admin_sql, [req.params.id], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else {
+            res.redirect("/admin");
         }
     })
 })
