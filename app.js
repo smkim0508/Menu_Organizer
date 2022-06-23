@@ -38,6 +38,16 @@ app.use(logger("dev"));
 // define middleware that serves static resources in the public directory
 app.use(express.static(__dirname + '/public'));
 
+// admin permission check
+const check_admin_permission_sql =`
+    SELECT
+        isAdmin
+    FROM
+        users
+    WHERE
+        email = ?
+`
+
 // req.isAuthenticated is provided from the auth router
 app.get('/testLogin', (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
@@ -55,19 +65,55 @@ app.get( "/", ( req, res ) => {
 } );
 
 app.get( "/menu/no_match", requiresAuth(), ( req, res ) => {
-    res.render('no_match');
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
+        else {
+            res.render('no_match');
+        }
+    })
 } );
 
 app.get( "/menu/no_id_found", requiresAuth(), ( req, res ) => {
-    res.render('no_order_id_found');
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
+        else {
+            res.render('no_order_id_found');
+        }
+    })
 } );
 
 app.get( "/edit/no_id_found", requiresAuth(), ( req, res ) => {
-    res.render('no_menu_id_found');
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            res.render('no_menu_id_found');
+        }
+    })
 } );
 
 app.get( "/access_denied", requiresAuth(), ( req, res ) => {
-    res.render('access_denied');
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
+        else {
+            res.render('access_denied');
+        }
+    })
 } );
 
 const read_combined_all_sql = `
@@ -108,14 +154,6 @@ const check_user_match_sql = `
         email = ?
 `
 
-const check_admin_permission_sql =`
-    SELECT
-        isAdmin
-    FROM
-        users
-    WHERE
-        email = ?
-`
 //renders the menu ordering page and checks if logged in user is within the admin db
 
 app.get("/menu", requiresAuth(), (req, res ) => {
@@ -183,11 +221,20 @@ const read_admin_edit_sql = `
 `
 
 app.get("/admin_edit", requiresAuth(), (req, res) => {
-    db.execute(read_admin_edit_sql, (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else
-            res.render("admin_control", { userlist : results })
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(read_admin_edit_sql, (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else
+                    res.render("admin_control", { userlist : results })
+            })
+        }
     })
 })
 
@@ -199,11 +246,20 @@ const read_edit_menu_sql = `
 `
 
 app.get( "/edit", requiresAuth(), ( req, res ) => {
-    db.execute(read_edit_menu_sql, (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else   
-            res.render("menu_edit", { inventory : results });
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(read_edit_menu_sql, (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else   
+                    res.render("menu_edit", { inventory : results });
+            })
+        }
     })
 })
 
@@ -216,17 +272,8 @@ const read_admin_sql = `
         email = ?
 `
 
-const check_admin_sql=`
-    SELECT
-        isAdmin
-    FROM
-        users
-    WHERE
-        email = ?
-`
-
 app.get( "/admin", requiresAuth(), (req, res) => {
-    db.execute(check_admin_sql, [req.oidc.user.email], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
         else if (results[0].isAdmin == 0) {
@@ -278,11 +325,20 @@ const delete_menu_sql = `
 `
 
 app.get("/edit/item/:id/delete", requiresAuth(), (req, res) => {
-    db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            res.redirect("/edit");
+            db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/edit");
+                }
+            })
         }
     })
 })
@@ -296,11 +352,20 @@ const delete_user_sql=`
 `
 
 app.get("/admin_edit/:id/delete", requiresAuth(), (req, res) => {
-    db.execute(delete_user_sql, [req.params.id], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            res.redirect("/admin_edit");
+            db.execute(delete_user_sql, [req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/admin_edit");
+                }
+            })
         }
     })
 })
@@ -314,11 +379,20 @@ const promote_admin_sql=`
         user_id = ?
 `
 app.get("/admin_edit/:id/promote", requiresAuth(), (req, res) => {
-    db.execute(promote_admin_sql, [req.params.id], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            res.redirect("/admin_edit");
+            db.execute(promote_admin_sql, [req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/admin_edit");
+                }
+            })
         }
     })
 })
@@ -332,11 +406,20 @@ const demote_admin_sql=`
         user_id = ?
 `
 app.get("/admin_edit/:id/demote", requiresAuth(), (req, res) => {
-    db.execute(demote_admin_sql, [req.params.id], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            res.redirect("/admin_edit");
+            db.execute(demote_admin_sql, [req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/admin_edit");
+                }
+            })
         }
     })
 })
@@ -384,8 +467,8 @@ app.post("/menu", requiresAuth(), (req, res) => {
                 })
             }
         })
-    }
-})
+        }
+    })
 })
 
 
@@ -398,11 +481,20 @@ const create_menu_sql = `
 `
 
 app.post("/edit", requiresAuth(), (req, res) => {
-    db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
-            res.status(500).send(error); //internal server error
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            res.redirect('/edit');
+            db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description], (error, results) => {
+                if (error)
+                    res.status(500).send(error); //internal server error
+                else {
+                    res.redirect('/edit');
+                }
+            })
         }
     })
 })
@@ -459,16 +551,25 @@ const read_edit_item_sql = `
 `
 
 app.get( "/edit/item/:id", requiresAuth(), (req, res ) => {
-    db.execute(read_edit_item_sql, [req.params.id], (error, results) => {
-        if(error)
-            res.status(500).send(error); //internal service error
-        else if (results.length == 0)
-            res.redirect('/edit/no_id_found');
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
         else {
-            let data = results[0];
-            console.log("successfully rendered edit item page");
-
-            res.render('menu_item_edit', data)
+            db.execute(read_edit_item_sql, [req.params.id], (error, results) => {
+                if(error)
+                    res.status(500).send(error); //internal service error
+                else if (results.length == 0)
+                    res.redirect('/edit/no_id_found');
+                else {
+                    let data = results[0];
+                    console.log("successfully rendered edit item page");
+        
+                    res.render('menu_item_edit', data)
+                }
+            })
         }
     })
 });
@@ -515,13 +616,22 @@ const update_menu_sql = `
         menu_id = ?
 `
 app.post("/edit/item/:id", requiresAuth(), (req,res) => {
-    db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.params.id], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
-            res.status(500).send(error); //internal server error
-        else {
-            res.redirect(`/edit/item/${req.params.id}`);
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
         }
-    })
+        else {
+            db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error); //internal server error
+                else {
+                    res.redirect(`/edit/item/${req.params.id}`);
+                }
+            })
+        }
+    })    
 })
 
 // const order_success_sql = `

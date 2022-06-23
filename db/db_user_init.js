@@ -11,7 +11,7 @@ CREATE TABLE users (
     user_id INT NOT NULL AUTO_INCREMENT, 
     email VARCHAR(45) NULL,
     isAdmin INT NOT NULL,
-    PRIMARY KEY (user_id)
+    PRIMARY KEY (user_id) 
     );
 `
 
@@ -25,7 +25,7 @@ const insert_users_table_sql = `
 `
 //sample items in the database
 db.execute(insert_users_table_sql, ["sunkim23@bergen.org", "1"]);
-db.execute(insert_users_table_sql, ["chefminkim58@gmail.org", "1"]);
+db.execute(insert_users_table_sql, ["chefminkim58@gmail.com", "1"]);
 
 const read_users_table_sql = "SELECT * FROM users";
 
