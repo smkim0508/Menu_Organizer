@@ -126,6 +126,8 @@ app.get("/menu", requiresAuth(), (req, res ) => {
             res.redirect("/admin")
         }
         else {
+            // console.log(results[0])
+            // console.log(results[0].isAdmin)
             db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results1) => {
                 if (error)
                     res.status(500).send(error);
@@ -249,11 +251,20 @@ const delete_orders_sql = `
 `
 
 app.get("/menu/item/:id/delete", requiresAuth(), (req, res ) => {
-    db.execute(delete_orders_sql, [req.params.id], ( error, results ) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
         else {
-            res.redirect("/menu");
+            db.execute(delete_orders_sql, [req.params.id], ( error, results ) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/menu");
+                }
+            })
         }
     })
 })
@@ -289,7 +300,7 @@ app.get("/admin_edit/:id/delete", requiresAuth(), (req, res) => {
         if (error)
             res.status(500).send(error);
         else {
-            res.redirect("/admin");
+            res.redirect("/admin_edit");
         }
     })
 })
@@ -307,7 +318,7 @@ app.get("/admin_edit/:id/promote", requiresAuth(), (req, res) => {
         if (error)
             res.status(500).send(error);
         else {
-            res.redirect("/admin");
+            res.redirect("/admin_edit");
         }
     })
 })
@@ -325,7 +336,7 @@ app.get("/admin_edit/:id/demote", requiresAuth(), (req, res) => {
         if (error)
             res.status(500).send(error);
         else {
-            res.redirect("/admin");
+            res.redirect("/admin_edit");
         }
     })
 })
@@ -347,26 +358,36 @@ const check_item_match_sql = `
 `
 
 app.post("/menu", requiresAuth(), (req, res) => {
-    // follows the "name" specified in the form function
-    // req.body.item
-    // req.body.quantity
-    db.execute(check_item_match_sql, [req.body.item], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
-            res.status(500).send(error); //internal server error
-        else if (results.length == 0)
-            // res.status(404).send(`Please choose an item from the menu!`)
-            res.redirect('/menu/no_match');
-        else {
-            db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email], (error, results) => {
-                if (error)
-                    res.status(500).send(error); //internal server error
-                else {
-                    res.redirect('/menu');
-                }
-            })
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
         }
-    })
+        else {
+            // follows the "name" specified in the form function
+        // req.body.item
+        // req.body.quantity
+        db.execute(check_item_match_sql, [req.body.item], (error, results) => {
+            if (error)
+                res.status(500).send(error); //internal server error
+            else if (results.length == 0)
+                // res.status(404).send(`Please choose an item from the menu!`)
+                res.redirect('/menu/no_match');
+            else {
+                db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email], (error, results) => {
+                    if (error)
+                        res.status(500).send(error); //internal server error
+                    else {
+                        res.redirect('/menu');
+                    }
+                })
+            }
+        })
+    }
 })
+})
+
 
 
 const create_menu_sql = `
@@ -402,21 +423,31 @@ const read_combined_item_sql =`
 
 //define a route for the item detail page
 app.get( "/menu/item/:id", requiresAuth(), (req, res ) => {
-    db.execute(read_combined_item_sql, [req.params.id, req.oidc.user.email], (error, results) => {
-
-        if(error)
-            res.status(500).send(error); //internal service error
-        else if (results.length == 0)
-            res.redirect('/menu/no_id_found');
-        else {
-            let data = results[0];
-            console.log("successfully rendered");
-            // console.log(data);
-            res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
         }
-        // res.send(results[0]);
+        else {
+            db.execute(read_combined_item_sql, [req.params.id, req.oidc.user.email], (error, results) => {
+
+                if(error)
+                    res.status(500).send(error); //internal service error
+                else if (results.length == 0)
+                    res.redirect('/menu/no_id_found');
+                else {
+                    let data = results[0];
+                    console.log("successfully rendered");
+                    // console.log(data);
+                    res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
+                }
+                // res.send(results[0]);
+            })
+        }
     })
-});
+})
+
 
 const read_edit_item_sql = `
     SELECT
@@ -454,14 +485,20 @@ const update_item_sql = `
 `
 
 app.post("/menu/item/:id", requiresAuth(), (req,res) => {
-    //req.params.id
-    //req.body.quantity
-    //req.body.request
-    db.execute(update_item_sql, [req.body.quantity, req.body.request, req.oidc.user.email, req.params.id], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
-            res.status(500).send(error); //internal server error
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
         else {
-            res.redirect(`/menu/item/${req.params.id}`);
+            db.execute(update_item_sql, [req.body.quantity, req.body.request, req.oidc.user.email, req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error); //internal server error
+                else {
+                    res.redirect(`/menu/item/${req.params.id}`);
+                }
+            })
         }
     })
 })
@@ -519,18 +556,27 @@ const read_receipt_sum_sql =`
 `
 
 app.get("/checkout", requiresAuth(), (req, res) => {
-    db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
         else {
-            db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+            db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    console.log(results)
-                    console.log(results2[0].sum)
-                    res.render('checkout', {inventory : results, sum : results2[0].sum })
-                    
+                    db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+                        if (error)
+                            res.status(500).send(error);
+                        else {
+                            console.log(results)
+                            console.log(results2[0].sum)
+                            res.render('checkout', {inventory : results, sum : results2[0].sum })
+                            
+                        }
+                    })
                 }
             })
         }
@@ -538,18 +584,27 @@ app.get("/checkout", requiresAuth(), (req, res) => {
 })
 
 app.get("/success", requiresAuth(), (req, res) => {
-    db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
         else {
-            db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+            db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    console.log(results)
-                    console.log(results2[0].sum)
-                    res.render('order_success', {inventory : results, sum : results2[0].sum })
-                    
+                    db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+                        if (error)
+                            res.status(500).send(error);
+                        else {
+                            console.log(results)
+                            console.log(results2[0].sum)
+                            res.render('order_success', {inventory : results, sum : results2[0].sum })
+                            
+                        }
+                    })
                 }
             })
         }
