@@ -66,6 +66,10 @@ app.get( "/edit/no_id_found", requiresAuth(), ( req, res ) => {
     res.render('no_menu_id_found');
 } );
 
+app.get( "/access_denied", requiresAuth(), ( req, res ) => {
+    res.render('access_denied');
+} );
+
 const read_combined_all_sql = `
     SELECT
         orders.order_id, orders.item, orders.quantity, orders.requests, menu.menu_id, menu.menu_item, menu.price, menu.calories, menu.description
@@ -193,12 +197,29 @@ const read_admin_sql = `
         email = ?
 `
 
+const check_admin_sql=`
+    SELECT
+        isAdmin
+    FROM
+        users
+    WHERE
+        email = ?
+`
+
 app.get( "/admin", requiresAuth(), (req, res) => {
-    db.execute(read_admin_sql, [req.oidc.user.email], (error, results) => {
+    db.execute(check_admin_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else
-            res.render("admin_main", { results, username: req.oidc.user.name})
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(read_admin_sql, [req.oidc.user.email], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else
+                    res.render("admin_main", { results, username: req.oidc.user.name})
+        }) }
     })
 })
 
