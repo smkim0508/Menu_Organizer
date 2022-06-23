@@ -152,7 +152,7 @@ app.get("/menu", requiresAuth(), (req, res ) => {
 //         })
 // })
 
-const read_admin_sql = `
+const read_admin_edit_sql = `
     SELECT
         user_id, email, isAdmin
     FROM
@@ -160,7 +160,7 @@ const read_admin_sql = `
 `
 
 app.get("/admin_edit", requiresAuth(), (req, res) => {
-    db.execute(read_admin_sql, (error, results) => {
+    db.execute(read_admin_edit_sql, (error, results) => {
         if (error)
             res.status(500).send(error);
         else
@@ -181,6 +181,24 @@ app.get( "/edit", requiresAuth(), ( req, res ) => {
             res.status(500).send(error);
         else   
             res.render("menu_edit", { inventory : results });
+    })
+})
+
+const read_admin_sql = `
+    SELECT
+        user_id, email, isAdmin
+    FROM
+        users
+    WHERE
+        email = ?
+`
+
+app.get( "/admin", requiresAuth(), (req, res) => {
+    db.execute(read_admin_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else
+            res.render("admin_main", { results, username: req.oidc.user.name})
     })
 })
 
