@@ -18,7 +18,7 @@
         <div class = "center">
         <thead>
             <tr>
-                <th>Menu</th>
+                <th>Item</th>
                 <th>Price</th>
                 <th>Calories</th>
                 <th>Description</th>
@@ -46,13 +46,13 @@
     </table>
     </div>
     <div class="section" id="EditMenu">
-        <h2>Add New Menu:</h2>
+        <h2>Add New Menu Item:</h2>
         <!-- form here -->
         <form class="col s12" method="post">
             <div class="row">
                 <div class="input-field col s4">
                 
-                    <label for="menu_item"><div class="input-color">Menu Name</div></label>
+                    <label for="menu_item"><div class="input-color">Item Name</div></label>
                     <input type="text" name="menu" class="validate" data-length="32" color="white" required>
 
                 </div>
@@ -71,13 +71,20 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <label for="description"><div class="input-color">Menu Description</div></label>
+                    <label for="description"><div class="input-color">Item Description</div></label>
                     <input type="text" name="description" class="validate" data-length="100" color="white">
                 </div>
             </div>
-            <button class="btn waves-effect waves-light" type="submit">
+            <button class="btn waves-effect waves-light green" type="submit">
                 <i class="material-icons right">send</i>Submit</button>
         </form>
+    </div>
+    <div class = "horizontal_buffer">
+        <table>
+            <td> <a class="waves-effect waves-light btn-small" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
+            </td>
+        </table>
+    </div>
     </div>
 </div>
 
