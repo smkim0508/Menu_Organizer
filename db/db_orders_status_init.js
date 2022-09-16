@@ -10,7 +10,7 @@ const create_orders_status_table_sql = `
 CREATE TABLE status ( 
     completed_id INT NOT NULL AUTO_INCREMENT, 
     email VARCHAR(45) NULL,
-    date 
+    date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     isComplete INT NOT NULL,
     PRIMARY KEY (completed_id) 
     );
