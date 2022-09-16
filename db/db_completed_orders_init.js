@@ -18,23 +18,23 @@ CREATE TABLE status (
 
 db.execute(create_orders_status_table_sql);
 
-const insert_completed_orders_table_sql = `
+const insert_orders_status_table_sql = `
     INSERT INTO
-        completed orders (email, i)
+        status (email, isComplete)
     VALUES 
         (?, ?);
 `
 //sample items in the database
-db.execute(insert_users_table_sql, ["sunkim23@bergen.org", "1"]);
-db.execute(insert_users_table_sql, ["chefminkim58@gmail.com", "1"]);
+db.execute(insert_orders_status_table_sql, ["sample@email.com", "1"]);
+db.execute(insert_orders_status_table_sql, ["sample2@email.com", "1"]);
 
-const read_users_table_sql = "SELECT * FROM users";
+const read_orders_status_table_sql = "SELECT * FROM status";
 
-db.execute(read_users_table_sql, 
+db.execute(read_orders_status_table_sql, 
     (error, results) => {
         if (error)
             throw error;
-        console.log("Table 'users' initialized with:")
+        console.log("Table 'status' initialized with:")
         console.log(results);
     }
 );
