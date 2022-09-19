@@ -69,7 +69,7 @@ app.get( "/menu/no_match", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -83,7 +83,7 @@ app.get( "/menu/no_id_found", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -97,7 +97,7 @@ app.get( "/edit/no_id_found", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -111,7 +111,7 @@ app.get( "/access_denied", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -168,12 +168,10 @@ app.get("/menu", requiresAuth(), (req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
-            // console.log(results[0])
-            // console.log(results[0].isAdmin)
             db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results1) => {
                 if (error)
                     res.status(500).send(error);
@@ -216,7 +214,7 @@ app.get("/admin_edit", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -242,7 +240,7 @@ app.get( "/edit", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -270,7 +268,7 @@ app.get( "/admin", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -296,7 +294,7 @@ app.get("/menu/item/:id/delete", requiresAuth(), (req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -324,7 +322,7 @@ app.get("/edit/item/:id/delete", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -352,7 +350,7 @@ app.get("/admin_edit/:id/delete", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -381,7 +379,7 @@ app.get("/admin_edit/:id/promote", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -410,7 +408,7 @@ app.get("/admin_edit/:id/demote", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -448,7 +446,7 @@ app.post("/menu", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -487,7 +485,7 @@ app.post("/edit", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -522,7 +520,7 @@ app.get( "/menu/item/:id", requiresAuth(), (req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -558,7 +556,7 @@ app.get( "/edit/item/:id", requiresAuth(), (req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -594,7 +592,7 @@ app.post("/menu/item/:id", requiresAuth(), (req,res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -625,7 +623,7 @@ app.post("/edit/item/:id", requiresAuth(), (req,res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+        else if (results[0] == 0) {
             res.redirect("/access_denied")
         }
         else {
@@ -678,7 +676,7 @@ app.get("/checkout", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
@@ -707,7 +705,7 @@ app.get("/success", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0].isAdmin == 1) {
+        else if (results[0] == 1) {
             res.redirect("/admin")
         }
         else {
