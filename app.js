@@ -200,9 +200,9 @@ app.get("/menu", requiresAuth(), (req, res ) => {
                                     res.status(500).send(error);
                                 else if (results3.length == 0){
                                     console.log("added user to db")
-                                    db.execute(add_user_sql, [req.oidc.user.email], (error, results4) => {
+                                    db.execute(add_user_sql, [req.oidc.user.email], (error) => {
                                         if (error)
-                                            res.status(500).send(error)
+                                            res.status(500).send(error);
                                     })
                                 }
                                 else {
@@ -569,7 +569,7 @@ app.get( "/edit/item/:id", requiresAuth(), (req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
-        else if (results[0] == 0) {
+        else if (results[0].isAdmin == 0) {
             res.redirect("/access_denied")
         }
         else {
