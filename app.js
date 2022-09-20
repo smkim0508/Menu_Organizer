@@ -64,6 +64,8 @@ app.get( "/", ( req, res ) => {
     res.render('index');
 } );
 
+// use middleware and combining requiresAuth() on top to prevent excessive callback loops
+
 // app.use(requiresAuth());
 // middleware -> if authenticated, check if admin or not. Take result, attach later
 
@@ -736,6 +738,31 @@ app.get("/success", requiresAuth(), (req, res) => {
         }
     })
 })
+
+// rendering order history viewable by individual users
+app.get("/user_history", requiresAuth(), (req, res) => { 
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
+        else {
+            db.execute(read_user_history_sql, [req.oidc.user.email], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.render('order_history_user', {inventory: results})
+                }
+            })
+        }
+    })
+})
+
+// rendering order history for a specified user by admins
+
+// rendering the complete order history for all users
+
 
 // start the server
 app.listen( port, () => {
