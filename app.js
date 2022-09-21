@@ -148,6 +148,12 @@ const read_sum_sql =`
     WHERE
         email = ?
 `
+const read_menu_sql = `
+    SELECT
+        menu_id, menu_item, price, calories, description
+    FROM
+        menu
+`
 
 // adds new users into the users database by default when they first access
 const add_user_sql=`
@@ -196,15 +202,21 @@ app.get("/menu", requiresAuth(), (req, res ) => {
                     db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
                         if (error)
                             res.status(500).send(error);
-                        else
-                            db.execute(read_sum_sql, [req.oidc.user.email], (error, results4) => {
+                        else {
+                            db.execute(read_menu_sql, (error, results4) => {
                                 if (error)
-                                    res.status(500).send(error); //internal server error
+                                    res.status(500).send(error);
                                 else {
-                                    res.render('menu', { inventory : results3, username : req.oidc.user.name, sum : results4[0].sum });
-                                    // console.log("render successful")
-                                    } 
+                                    db.execute(read_sum_sql, [req.oidc.user.email], (error, results5) => {
+                                        if (error)
+                                            res.status(500).send(error); //internal server error
+                                        else {
+                                            res.render('menu', { orders : results3, menu : results4, username : req.oidc.user.name, sum : results5[0].sum });
+                                            } 
+                                    })
+                                }
                             })
+                        }
                     })
                 }
             })

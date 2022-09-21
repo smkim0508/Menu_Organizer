@@ -40,12 +40,12 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < inventory.length; i++) { %>
+                <% for(let i = 0; i < menu.length; i++) { %>
                 <tr>
-                    <td><%= inventory[i].menu_item %></td>
-                    <td>$<%= inventory[i].price %></td>
-                    <td><%= inventory[i].calories %></td>
-                    <td><%= inventory[i].description %></td>
+                    <td><%= menu[i].menu_item %></td>
+                    <td>$<%= menu[i].price %></td>
+                    <td><%= menu[i].calories %></td>
+                    <td><%= menu[i].description %></td>
                 </tr>
     
                 <% } %>
@@ -66,15 +66,15 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < orders.length; i++) { %>
             <tr>
-                <td><%= inventory[i].menu_item %></td>
-                <td><%= inventory[i].quantity %></td>
-                <td>$<%= inventory[i].price*inventory[i].quantity %></td>
+                <td><%= orders[i].menu_item %></td>
+                <td><%= orders[i].quantity %></td>
+                <td>$<%= menu[i].price*orders[i].quantity %></td>
                 <td>
-                    <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=inventory[i].order_id %>"><i
+                    <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=orders[i].order_id %>"><i
                             class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=inventory[i].order_id %>/delete"><i
+                    <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=orders[i].order_id %>/delete"><i
                             class="material-icons right">delete</i>Delete</a>
                 </td>
             </tr>
@@ -85,12 +85,19 @@
         </div>
     </table>
     <div class = "buffer">
-    <h6><b>Total:</b> $<%= sum %></h6>
+    <h6><b>Total:</b> $
+        <% if (sum <= 0) { %>
+        0
+        <% } 
+        else { %>
+        <%= sum %>
+        <% } %>
+    </h6>
     </div> 
     </div>
     <div class="section" id="AddMenu">
         <h2>Place New Order:</h2>
-        <!-- form here -->
+        
         <form class="col s12" method="post">
             <div class="row">
                 <div class="input-field col s6">
