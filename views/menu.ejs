@@ -70,7 +70,7 @@
             <tr>
                 <td><%= orders[i].menu_item %></td>
                 <td><%= orders[i].quantity %></td>
-                <td>$<%= menu[i].price*orders[i].quantity %></td>
+                <td>$<%= orders[i].price*orders[i].quantity %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=orders[i].order_id %>"><i
                             class="material-icons right">edit</i>Edit</a>
@@ -97,7 +97,7 @@
     </div>
     <div class="section" id="AddMenu">
         <h2>Place New Order:</h2>
-        
+
         <form class="col s12" method="post">
             <div class="row">
                 <div class="input-field col s6">
