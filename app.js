@@ -227,7 +227,7 @@ app.get("/menu", requiresAuth(), (req, res) => {
 // render the users database on admin page
 const read_admin_edit_sql = `
     SELECT
-        user_id, email, isAdmin
+        user_id, username, email, isAdmin
     FROM
         users
 `
@@ -782,11 +782,16 @@ app.get("/history_user", requiresAuth(), (req, res) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_history_user_sql, [req.oidc.user.email], (error, results) => {
+            db.execute(read_history_user_sql, [req.oidc.user.email], (error, results2) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    res.render('order_history_users', {inventory: results})
+                    if (results2.length == 0) {
+                        res.render('no_order_history_users');
+                    }
+                    else {
+                        res.render('order_history_users', {inventory: results2});
+                    }
                 }
             })
         }
@@ -798,7 +803,7 @@ app.get("/history_user", requiresAuth(), (req, res) => {
 const read_history_admin_sql =`
     SELECT
         left(status.date, length(date) - char('G', reverse(date) + 'G')) as date,
-        status.history_id, status.username, status.item, status.quantity, status.isComplete, users.user_id
+        status.history_id, users.username, status.item, status.quantity, status.isComplete, users.user_id
     FROM
         status
     INNER JOIN
@@ -813,6 +818,16 @@ const read_history_admin_sql =`
 //     WHERE
 //         email = ?
 
+// check if user has made order before
+
+const check_history_exists_sql =`
+    SELECT
+        status.email
+    FROM
+        status
+    INNER JOIN
+        users ON status.email = users.email
+`
 app.get("/history_admin/:user", requiresAuth(), (req, res) => { 
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
@@ -821,11 +836,17 @@ app.get("/history_admin/:user", requiresAuth(), (req, res) => {
             res.redirect("/access_denied")
         }
         else {
-            db.execute(read_history_admin_sql, [req.params.user], (error, results) => {
+            db.execute(read_history_admin_sql, [req.params.user], (error, results2) => {
+                // console.log(results2.length);
                 if (error)
                     res.status(500).send(error);
                 else { 
-                    res.render('order_history_admin', {inventory: results})
+                    if (results2.length == 0) {
+                        res.render('no_order_history_admin', [user_id = req.params.user]);
+                    }
+                    else {
+                    res.render('order_history_admin', {inventory: results2});
+                    }
                 }
             })
         }
@@ -851,11 +872,16 @@ app.get("/history_admin_complete", requiresAuth(), (req, res) => {
             res.redirect("/access_denied")
         }
         else {
-            db.execute(read_history_admin_complete_sql, (error, results) => {
+            db.execute(read_history_admin_complete_sql, (error, results2) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    res.render('order_history_complete', {inventory: results})
+                    if (results2.length == 0) {
+                        res.render('no_order_history_complete');
+                    }
+                    else {
+                        res.render('order_history_complete', {inventory: results2})
+                    }
                 }
             })
         }
@@ -960,6 +986,34 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
     })
 })
 
+// redirect to no order history found page if no matching results return
+
+// const read_no_order_history_admin =`
+//     SELECT
+//         user_id
+//     FROM
+//         users
+//     WHERE
+//         user_id = ?
+// `
+// app.get("/no_order_history_found_admin/:user_id", requiresAuth(), (req, res) => {
+//     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+//         if (error)
+//             res.status(500).send(error);
+//         else if (results[0].isAdmin == 0) {
+//             res.redirect("/access_denied")
+//         }
+//         else {
+//             db.execute(read_no_order_history_admin, [req.params.user_id], (error, results2) => {
+//                 if (error)
+//                     res.status(500).send(error);
+//                 else {
+//                     res.render("no_order_history_found_admin", results)
+//                 }
+//             })
+//         }
+//     })
+// })
 // start the server
 app.listen( port, () => {
     console.log(`App server listening on ${ port }. (Go to http://localhost:${ port })` );
