@@ -9,12 +9,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/styles/style.css">
 </head>
-<body class = "teal lighten-2">
+<body class = "orange lighten-2">
     <div class ="container">
     <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
         <p>Order History:</p>
+        </div>
         <div class="small_buffer"></div>
         <div class="table_font">
         <table>
@@ -36,21 +37,19 @@
                 <td><%= inventory[i].date %></td>
                 <td><%= inventory[i].username %></td>
                 <td><%= inventory[i].email%></td>
-                <td><%= inventory[i].menu_item %></td>
+                <td><%= inventory[i].item %></td>
                 <td><%= inventory[i].quantity %></td>
-                <% if(isComplete == 1) { %>
+                <% if(inventory[i].isComplete == 1) { %>
                     <td>Y</td>
-                }
-                <% else { %>
+                <% }
+                else { %>
                     <td>N</td>
-                }
+                <% } %>
             </tr>
 
             <% } %>
         </tbody>
         </table>
-       
-        </div>
         <div class = "horizontal_buffer">
             <table>
                 <td> <a class="waves-effect waves-light btn-large red" href="/admin"><i class="material-icons right">arrow_back</i>return</a></td>

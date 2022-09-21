@@ -743,7 +743,7 @@ app.get("/success", requiresAuth(), (req, res) => {
 
 const read_history_user_sql =`
     SELECT
-        date, item, quantity, isComplete
+        username, date, item, quantity, isComplete
     FROM
         status
     WHERE
@@ -762,7 +762,7 @@ app.get("/history_user", requiresAuth(), (req, res) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    res.render('order_history_user', {inventory: results})
+                    res.render('order_history_users', {inventory: results})
                 }
             })
         }
@@ -828,7 +828,7 @@ app.get("/history_admin_complete", requiresAuth(), (req, res) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    res.render('order_history_admin', {inventory: results})
+                    res.render('order_history_complete', {inventory: results})
                 }
             })
         }
