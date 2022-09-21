@@ -175,13 +175,13 @@ const check_user_match_sql = `
 
 //renders the menu ordering page and checks if logged in user is within the admin db
 
-app.get("/menu", requiresAuth(), (req, res ) => {
+app.get("/menu", requiresAuth(), (req, res) => {
     db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
         else {
             if (results.length == 0) {
-                db.execute(add_user_sql, [req.oidc.user.name], [req.oidc.user.email], (error) => {
+                db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email], (error) => {
                     if (error)
                         res.status(500).send(error);
                 })
