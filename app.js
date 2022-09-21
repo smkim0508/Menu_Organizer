@@ -151,8 +151,8 @@ const read_sum_sql =`
 
 // adds new users into the users database by default when they first access
 const add_user_sql=`
-    INSERT INTO users
-        (email, isAdmin)
+    INSERT INTO 
+        users (email, isAdmin)
     VALUES
         (?, 0)
 `
@@ -681,6 +681,13 @@ const read_receipt_sum_sql =`
         email = ?
 `
 
+const record_order_history_sql =`
+    INSERT INTO 
+        status (username, email, item, quantity, isComplete)
+    VALUES
+        (?, ?, ?, ?, ?)
+`
+
 // renders the receipt during the checkout page as confirmation
 app.get("/checkout", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
@@ -698,8 +705,8 @@ app.get("/checkout", requiresAuth(), (req, res) => {
                         if (error)
                             res.status(500).send(error);
                         else {
-                            console.log(results)
-                            console.log(results2[0].sum)
+                            // console.log(results)
+                            // console.log(results2[0].sum)
                             res.render('checkout', {inventory : results, sum : results2[0].sum })
                             
                         }
@@ -727,10 +734,13 @@ app.get("/success", requiresAuth(), (req, res) => {
                         if (error)
                             res.status(500).send(error);
                         else {
-                            console.log(results)
-                            console.log(results2[0].sum)
-                            res.render('order_success', {inventory : results, sum : results2[0].sum })
-                            
+                            for (i=0; i<results.length; i++) {
+                                db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, "0"], (error, results3) => {
+                                    if (error)
+                                        res.status(500).send(error);
+                                })
+                            }
+                            res.render('order_success', {inventory : results, sum : results2[0].sum })        
                         }
                     })
                 }
@@ -743,7 +753,9 @@ app.get("/success", requiresAuth(), (req, res) => {
 
 const read_history_user_sql =`
     SELECT
-        username, date, item, quantity, isComplete
+        username, 
+        left(date, length(date) - char('G', reverse(date) + 'G')) as date,
+        item, quantity, isComplete
     FROM
         status
     WHERE
@@ -773,7 +785,8 @@ app.get("/history_user", requiresAuth(), (req, res) => {
 
 const read_history_admin_sql =`
     SELECT
-        status.date, status.username, status.item, status.quantity, status.isComplete
+        left(status.date, length(date) - char('G', reverse(date) + 'G')) as date,
+        status.username, status.item, status.quantity, status.isComplete
     FROM
         status
     INNER JOIN
@@ -811,7 +824,9 @@ app.get("/history_admin/:user", requiresAuth(), (req, res) => {
 
 const read_history_admin_complete_sql =`
     SELECT
-        history_id, date, username, email, item, quantity, isComplete
+        history_id, 
+        left(date, length(date) - char('G', reverse(date) + 'G')) as date, 
+        username, email, item, quantity, isComplete
     FROM
         status
 `
