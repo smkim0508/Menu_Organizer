@@ -158,9 +158,9 @@ const read_menu_sql = `
 // adds new users into the users database by default when they first access
 const add_user_sql=`
     INSERT INTO 
-        users (email, isAdmin)
+        users (username, email, isAdmin)
     VALUES
-        (?, 0)
+        (?, ?, 0)
 `
 
 // a check for whether the user exists in db
@@ -181,7 +181,7 @@ app.get("/menu", requiresAuth(), (req, res ) => {
             res.status(500).send(error);
         else {
             if (results.length == 0) {
-                db.execute(add_user_sql, [req.oidc.user.email], (error) => {
+                db.execute(add_user_sql, [req.oidc.user.name], [req.oidc.user.email], (error) => {
                     if (error)
                         res.status(500).send(error);
                 })
