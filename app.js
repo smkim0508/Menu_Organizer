@@ -786,7 +786,7 @@ app.get("/history_user", requiresAuth(), (req, res) => {
 const read_history_admin_sql =`
     SELECT
         left(status.date, length(date) - char('G', reverse(date) + 'G')) as date,
-        status.username, status.item, status.quantity, status.isComplete
+        status.history_id, status.username, status.item, status.quantity, status.isComplete, users.user_id
     FROM
         status
     INNER JOIN
@@ -844,6 +844,104 @@ app.get("/history_admin_complete", requiresAuth(), (req, res) => {
                     res.status(500).send(error);
                 else {
                     res.render('order_history_complete', {inventory: results})
+                }
+            })
+        }
+    })
+})
+
+// adjust the completion status of orders in order history
+
+const not_completed_orders =`
+    UPDATE
+        status
+    SET
+        isComplete = 0
+    WHERE
+        history_id = ?
+`
+
+const completed_orders =`
+    UPDATE
+        status
+    SET
+        isComplete = 1
+    WHERE
+        history_id = ?
+`
+
+// order completion status update for complete order history
+app.get("/history_admin_complete/:id/order_completed", requiresAuth(), (req, res) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(completed_orders, [req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/history_admin_complete")
+                }
+            })
+        }
+    })
+})
+
+app.get("/history_admin_complete/:id/order_not_completed", requiresAuth(), (req, res) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(not_completed_orders, [req.params.id], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/history_admin_complete")
+                }
+            })
+        }
+    })
+})
+
+// order completion status update for individual user order history
+app.get("/history_admin/:user_id/:history_id/order_completed", requiresAuth(), (req, res) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(completed_orders, [req.params.history_id], (error, results2) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/history_admin/" + req.params.user_id)
+                }
+            })
+        }
+    })
+})
+
+app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(), (req, res) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(not_completed_orders, [req.params.history_id], (error, results2) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.redirect("/history_admin/" + req.params.user_id)
                 }
             })
         }

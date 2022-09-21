@@ -40,10 +40,10 @@
                 <td><%= inventory[i].item %></td>
                 <td><%= inventory[i].quantity %></td>
                 <% if(inventory[i].isComplete == 1) { %>
-                    <td>Y</td>
+                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin_complete/<%= inventory[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
                 <% }
                 else { %>
-                    <td>N</td>
+                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin_complete/<%= inventory[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
                 <% } %>
             </tr>
 
