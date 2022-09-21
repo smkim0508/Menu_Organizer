@@ -22,15 +22,18 @@
         <thead>
             <tr>
                 <th>User ID</th>
+                <th>User</th>
                 <th>Email</th>
                 <th>Is Admin?</th>
                 <th>Actions</th>
+                <th>Order History</th>
             </tr>
         </thead>
         <tbody>
             <% for(let i = 0; i < userlist.length; i++) { %>
             <tr>
                 <td><%= userlist[i].user_id %></td>
+                <td><%= userlist[i].username %></td>
                 <td><%= userlist[i].email %></td>
                 <td><%= userlist[i].isAdmin %></td>
                 <td>
@@ -40,6 +43,10 @@
                             class="material-icons right">arrow_downward</i>Demote</a>
                     <a class="btn-small waves-effect waves-light red" href="/admin_edit/<%=userlist[i].user_id %>/delete"><i
                         class="material-icons right">delete</i>Delete User</a>
+                </td>
+                <td>
+                    <a class="btn-small waves-effect waves-light" href="/history_admin/<%=userlist[i].user_id %>"><i 
+                        class="material-icons right">history</i>view</a>
                 </td>
             </tr>
 

@@ -740,7 +740,17 @@ app.get("/success", requiresAuth(), (req, res) => {
 })
 
 // rendering order history viewable by individual users
-app.get("/user_history", requiresAuth(), (req, res) => { 
+
+const read_history_user_sql =`
+    SELECT
+        date, item, quantity, isComplete
+    FROM
+        status
+    WHERE
+        email = ?
+`
+
+app.get("/history_user", requiresAuth(), (req, res) => { 
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
@@ -748,7 +758,7 @@ app.get("/user_history", requiresAuth(), (req, res) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_user_history_sql, [req.oidc.user.email], (error, results) => {
+            db.execute(read_history_user_sql, [req.oidc.user.email], (error, results) => {
                 if (error)
                     res.status(500).send(error);
                 else {
@@ -761,8 +771,69 @@ app.get("/user_history", requiresAuth(), (req, res) => {
 
 // rendering order history for a specified user by admins
 
+const read_history_admin_sql =`
+    SELECT
+        status.date, status.username, status.item, status.quantity, status.isComplete
+    FROM
+        status
+    INNER JOIN
+        users ON status.email = users.email
+    WHERE
+        user_id = ?
+`
+//     SELECT
+//         date, username, item, quantity, isComplete
+//     FROM
+//         status
+//     WHERE
+//         email = ?
+
+app.get("/history_admin/:user", requiresAuth(), (req, res) => { 
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(read_history_admin_sql, [req.params.user], (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else { 
+                    res.render('order_history_admin', {inventory: results})
+                }
+            })
+        }
+    })
+})
+
 // rendering the complete order history for all users
 
+const read_history_admin_complete_sql =`
+    SELECT
+        history_id, date, username, email, item, quantity, isComplete
+    FROM
+        status
+`
+
+app.get("/history_admin_complete", requiresAuth(), (req, res) => { 
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(read_history_admin_complete_sql, (error, results) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    res.render('order_history_admin', {inventory: results})
+                }
+            })
+        }
+    })
+})
 
 // start the server
 app.listen( port, () => {

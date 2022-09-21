@@ -14,7 +14,7 @@
     <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
-        <p><%= username %>'s order history is shown below.</p>
+        <p><%= username %>'s order history:</p>
         <div class="small_buffer"></div>
         <div class="table_font">
         <table>
@@ -23,6 +23,7 @@
                 <th>Date</th>
                 <th>Item</th>
                 <th>Quantity</th>
+                <th>Completed?</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +31,8 @@
             <tr>
                 <td><%= inventory[i].date %></td>
                 <td><%= inventory[i].menu_item %></td>
-                <td>$<%= inventory[i].quantity %></td>
+                <td><%= inventory[i].quantity %></td>
+                <td><%= inventory[i].isComplete %></td>
             </tr>
 
             <% } %>
