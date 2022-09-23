@@ -101,13 +101,15 @@
         <form class="col s12" method="post">
             <div class="row">
                 <div class="input-field col s6">
-    
-                    <label for="menu_item"><div class="input-color">Item Name</div></label>
-                    <input type="text" name="item" class="validate" data-length="32" color="white" required>
-                    
+                    <label for="menu_item"><div class="input-color">Choose an Item</div></label>
+                    <input type="text" name="item" list="menu">
+                        <datalist id="menu">
+                            <% for (i=0; i<menu.length; i++) { %>
+                            <option value="<%= menu[i].menu_item %>">
+                            <% } %>
+                        </datalist>
                 </div>
                 <div class="input-field col s6">
-                
                     <label for="quantity"><div class="input-color">Quantity</div></label>
                     <input type="number" name="quantity" class="validate" value="1" required>
                     
