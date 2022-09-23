@@ -101,10 +101,10 @@
         <form class="col s12" method="post">
             <div class="row">
                 <select>
-                     <option value="" disabled selected>Choose an Item</option>
-                            <% for (i=0; i<menu.length; i++) { %>
-                            <option value="<%= menu[i].menu_item %>">
-                            <% } %>
+                    <option value="" disabled selected>Choose an Item</option>
+                    <% for (i=0; i<menu.length; i++) { %>
+                    <option value="<%= menu[i].menu_item %>"><%= menu[i].menu_item %></option>
+                    <% } %>
                 </select>
     <label>Materialize Select</label>
 
