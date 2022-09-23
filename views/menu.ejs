@@ -98,17 +98,10 @@
     <div class="section" id="AddMenu">
         <h2>Place New Order:</h2>
 
-        <form class="col s12" method="post">
+        <form class="col s12" method="post" id="menu">
             <div class="row">
-                <select>
-                    <option value="" disabled selected>Choose an Item</option>
-                    <% for (i=0; i<menu.length; i++) { %>
-                    <option value="<%= menu[i].menu_item %>"><%= menu[i].menu_item %></option>
-                    <% } %>
-                </select>
-    <label>Materialize Select</label>
-
                 <div class="input-field col s6">
+
                     <label for="menu_item"><div class="input-color">Choose an Item</div></label>
                     <input type="text" name="item" list="menu">
                         <datalist id="menu">
@@ -116,6 +109,7 @@
                             <option value="<%= menu[i].menu_item %>">
                             <% } %>
                         </datalist>
+                
                 </div>
                 <div class="input-field col s6">
                     <label for="quantity"><div class="input-color">Quantity</div></label>
