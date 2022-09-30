@@ -773,6 +773,18 @@ const read_history_user_sql =`
     WHERE
         email = ?
 `
+// time zone setting 
+
+// const read_history_user_sql =`
+//     SELECT
+//         username, 
+//         left(date at time zone 'America/New_York' from dual, length(date) - char('G', reverse(date) + 'G')) as date,
+//         item, quantity, isComplete
+//     FROM
+//         status
+//     WHERE
+//         email = ?
+// `
 
 app.get("/history_user", requiresAuth(), (req, res) => { 
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
@@ -818,16 +830,6 @@ const read_history_admin_sql =`
 //     WHERE
 //         email = ?
 
-// check if user has made order before
-
-const check_history_exists_sql =`
-    SELECT
-        status.email
-    FROM
-        status
-    INNER JOIN
-        users ON status.email = users.email
-`
 app.get("/history_admin/:user", requiresAuth(), (req, res) => { 
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
