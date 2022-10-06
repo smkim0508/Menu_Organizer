@@ -175,7 +175,7 @@ const check_user_match_sql = `
 
 //renders the menu ordering page and checks if logged in user is within the admin db
 
-app.get("/menu", (req, res) => {
+app.get("/menu", requiresAuth(), (req, res) => {
     db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
