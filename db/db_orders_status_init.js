@@ -12,7 +12,7 @@ CREATE TABLE status (
     username VARCHAR(45) NOT NULL, 
     email VARCHAR(45) NOT NULL,
     date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    item VARCHAR (45) NOT NULL,
+    item VARCHAR (100) NOT NULL,
     quantity INT NOT NULL,
     isComplete INT NOT NULL,
     PRIMARY KEY (history_id) 

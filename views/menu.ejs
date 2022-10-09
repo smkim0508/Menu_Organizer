@@ -104,7 +104,7 @@
                 <div class="input-field col s6">
                     <label for="opt"><div class="input-color">Choose an Item</div></label>
                 
-                    <input type="text" id="opt" name="item" list="options" data-length="40" required>
+                    <input type="text" id="opt" name="item" list="options" data-length="100" required>
                         <datalist id="options">
                             <% for (let k = 0; k < menu.length; k++) { %>
                                 <option value="<%= menu[k].menu_item %>"></option>
@@ -121,7 +121,7 @@
             <div class="row">
                 <div class="input-field col s12">
                     <label for="requests"><div class="input-color">Special Requests</div></label>
-                    <input type="text" name="requests" class="validate" data-length="100" color="white">
+                    <input type="text" name="requests" class="validate" data-length="250" color="white">
                 </div>
             </div>
             <div class="row">

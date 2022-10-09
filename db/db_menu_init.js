@@ -7,10 +7,10 @@ db.execute(drop_menu_table_sql);
 const create_menu_table_sql = `
 CREATE TABLE menu ( 
     menu_id INT NOT NULL AUTO_INCREMENT, 
-    menu_item VARCHAR(45) NOT NULL, 
+    menu_item VARCHAR(100) NOT NULL, 
     price INT NOT NULL, 
     calories INT NOT NULL,
-    description VARCHAR(150) NOT NULL,
+    description VARCHAR(250) NOT NULL,
     PRIMARY KEY (menu_id)
     );
 `

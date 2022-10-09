@@ -10,9 +10,9 @@ const create_orders_table_sql = `
 CREATE TABLE orders ( 
     order_id INT NOT NULL AUTO_INCREMENT, 
     email VARCHAR(45) NULL,
-    item VARCHAR(45) NOT NULL, 
+    item VARCHAR(100) NOT NULL, 
     quantity INT NOT NULL, 
-    requests VARCHAR(150) NULL, 
+    requests VARCHAR(250) NULL, 
     PRIMARY KEY (order_id)
     );
 `
