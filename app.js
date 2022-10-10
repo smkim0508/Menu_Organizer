@@ -732,7 +732,7 @@ const record_order_history_sql =`
         (?, ?, ?, ?, ?)
 `
 
-// renders the receipt during the checkout page as confirmation
+// renders the receipt during the checkout page as confirmation if the order for the week has not been filled yet
 app.get("/checkout", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
@@ -741,18 +741,35 @@ app.get("/checkout", requiresAuth(), (req, res) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
+            db.execute(count_number_incompleted_orders, (error, results) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
+                    db.execute(count_number_orders_week, (error, results2) => {
                         if (error)
                             res.status(500).send(error);
                         else {
-                            // console.log(results)
-                            // console.log(results2[0].sum)
-                            res.render('checkout', {inventory : results, sum : results2[0].sum })
-                            
+                            if (results.length >= results2[0].numOrders) {
+                                res.redirect('/order_filled');
+                            }
+                            else {
+                                db.execute(read_receipt_sql, [req.oidc.user.email], (error, results3) => {
+                                    if (error)
+                                        res.status(500).send(error);
+                                    else {
+                                        db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results4) => {
+                                            if (error)
+                                                res.status(500).send(error);
+                                            else {
+                                                // console.log(results)
+                                                // console.log(results2[0].sum)
+                                                res.render('checkout', {inventory : results3, sum : results4[0].sum })
+                                                
+                                            }
+                                        })
+                                    }
+                                })
+                            }
                         }
                     })
                 }
