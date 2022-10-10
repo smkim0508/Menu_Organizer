@@ -172,8 +172,26 @@ const check_user_match_sql = `
     WHERE
         email = ?
 `
+// display "order has been filled for this week" if the number of incompleted orders exceed a certain quota
 
-//renders the menu ordering page and checks if logged in user is within the admin db
+// counts the number of incompleted orders
+const count_number_incompleted_orders = `
+    SELECT 
+        isComplete
+    FROM
+        status
+    WHERE
+        isComplete = 0
+`
+// counts the number of designated orders taken per week
+const count_number_orders_week = `
+    SELECT
+        numOrders
+    FROM
+        settings
+`
+
+//renders the menu and the ordering page and checks if logged in user is within the admin db and checks for the number of completed orders for the week
 
 app.get("/menu", requiresAuth(), (req, res) => {
     db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
@@ -209,10 +227,24 @@ app.get("/menu", requiresAuth(), (req, res) => {
                                 else {
                                     db.execute(read_sum_sql, [req.oidc.user.email], (error, results5) => {
                                         if (error)
-                                            res.status(500).send(error); //internal server error
+                                            res.status(500).send(error);
                                         else {
-                                            res.render('menu', { orders : results3, menu : results4, username : req.oidc.user.name, sum : results5[0].sum });
-                                            } 
+                                            db.execute(count_number_orders_week, (error, results6) => {
+                                                if (error)
+                                                    res.status(500).send(error);
+                                                else {
+                                                    db.execute(count_number_incompleted_orders, (error, results7) => {
+                                                        if (error)
+                                                            res.status(500).send(error);
+                                                        else {
+                                                            res.render('menu', { orders : results3, menu : results4, username : req.oidc.user.name, sum : results5[0].sum, numOrders : results6[0].numOrders, incompleteOrders : results7 });
+                                                            // console.log(results6[0].numOrders)
+                                                            // console.log(results7.length)
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        } 
                                     })
                                 }
                             })
@@ -1016,6 +1048,8 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 //         }
 //     })
 // })
+
+
 // start the server
 app.listen( port, () => {
     console.log(`App server listening on ${ port }. (Go to http://localhost:${ port })` );
