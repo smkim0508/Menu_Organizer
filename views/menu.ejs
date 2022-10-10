@@ -13,7 +13,12 @@
 <div class="white-text">
 <div class="container">
         <div class="fixed-action-btn" style="bottom: 180px; right: 24px;">
+            <% if (incompleteOrders.length >= numOrders) { %>
+            <a href="/order_filled" class="btn-floating btn-large red">
+            <% }
+            else { %>
             <a href="/checkout" class="btn-floating btn-large red">
+            <% } %>   
               <i class="large material-icons">shopping_cart</i>
             </a>
         </div>

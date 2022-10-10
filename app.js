@@ -1049,6 +1049,19 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 //     })
 // })
 
+// Error page when the orders for the week has been completed already
+app.get( "/order_filled", requiresAuth(), ( req, res ) => {
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 1) {
+            res.redirect("/admin")
+        }
+        else {
+            res.render('order_filled');
+        }
+    })
+} );
 
 // start the server
 app.listen( port, () => {
