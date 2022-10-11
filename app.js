@@ -771,6 +771,17 @@ const record_order_history_sql_null =`
         (?, ?, ?, ?, ?)
 `
 
+// check if the item ordered is available
+const check_item_availability_sql =`
+    SELECT
+        item
+    FROM
+        orders
+    WHERE
+        item = ?
+        AND
+        email = ?
+`
 // renders the receipt during the checkout page as confirmation if the order for the week has not been filled yet
 app.get("/checkout", requiresAuth(), (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
@@ -780,35 +791,49 @@ app.get("/checkout", requiresAuth(), (req, res) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_num_menu_sql, (error, currMenu) => {
+            db.execute(read_num_menu_sql, [req.oidc.user.email], (error, currMenu) => {
                 if (error)
                     res.status(500).send(error);
                 else {
                     let numIncomplete = [];
                     let temp = [];
-                    // const numIncomplete = new Array(currMenu.length).fill(0);
+                    // console.log(currMenu.length)
                     for (let i = 0; i < currMenu.length; i++) {
-                        // console.log(currMenu.length)
+                        // console.log(currMenu)
                         db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
                             if (error)
                                 res.status(500).send(error);
                             else {
-                                if (num[0].sum == null) {
-                                    numIncomplete[i] = 0;
-                                }
-                                else {
-                                    numIncomplete[i] = num[0].sum;
-                                    if (numIncomplete[i] >= currMenu[i].numAvail) {
-                                        temp[i] = currMenu[i].menu_item;
+                                db.execute(check_item_availability_sql, [currMenu[i].menu_item, req.oidc.user.email], (error, count) => {
+                                    console.log(count)
+                                    if (error)
+                                        res.status(500).send(error);
+                                    else {
+                                        if (num[0].sum == null) {
+                                            numIncomplete[i] = 0;
+                                        }
+                                        else {
+                                            numIncomplete[i] = num[0].sum;
+                                        }
+                                        if (numIncomplete[i] >= currMenu[i].numAvail && count.length > 0) {
+                                                temp[i] = currMenu[i].menu_item;
+                                        }
                                     }
+                                })
+                                
+                                    // console.log(temp)
+                                    // console.log(numIncomplete)
                                     // console.log(numIncomplete[i])
                                     // console.log(currMenu[i].numAvail);
-                                }
+                                
                                 // console.log(num[0].sum)
+                                // console.log(numIncomplete[i])
                             }
                         })
 
                     }
+                    // console.log(temp)
+                    // console.log(numIncomplete)
                     db.execute(read_receipt_sql, [req.oidc.user.email], (error, results3) => {
                         if (error)
                             res.status(500).send(error);
@@ -822,13 +847,14 @@ app.get("/checkout", requiresAuth(), (req, res) => {
                                         // console.log(temp)
                                     }
                                     else {
+                                        // console.log(temp)
+                                        // console.log(numIncomplete)
                                         res.render('checkout', { inventory : results3, sum : results4[0].sum })
                                     }
                                 }
-                            })
+                            }) 
                         }
                     })
-                    
                 }   
             })
         }
@@ -1140,33 +1166,39 @@ app.get( "/order_filled", requiresAuth(), ( req, res ) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_num_menu_sql, (error, currMenu) => {
+            db.execute(read_receipt_sql, [req.oidc.user.email], (error, r1) => {
                 if (error)
-                    res.status(500).send(error);
+                    res.status(500).send(error)
                 else {
-                    let numIncomplete = [];
-                    let temp = [];
-                    for (let i = 0; i < currMenu.length; i++) {
-                        db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-                            if (error)
-                                res.status(500).send(error);
-                            else {
-                                if (num[0].sum == null) {
-                                    numIncomplete[i] = 0;
-                                }
-                                else {
-                                    numIncomplete[i] = num[0].sum;
-                                    if (numIncomplete[i] >= currMenu[i].numAvail) {
-                                        temp[i] = currMenu[i].menu_item;
+                    db.execute(read_num_menu_sql, (error, currMenu) => {
+                        if (error)
+                            res.status(500).send(error);
+                        else {
+                            let numIncomplete = [];
+                            let temp = [];
+                            for (let i = 0; i < currMenu.length; i++) {
+                                db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
+                                    if (error)
+                                        res.status(500).send(error);
+                                    else {
+                                        if (num[0].sum == null) {
+                                            numIncomplete[i] = 0;
+                                        }
+                                        else {
+                                            numIncomplete[i] = num[0].sum;
+                                            if (numIncomplete[i] >= currMenu[i].numAvail) {
+                                                temp[i] = currMenu[i].menu_item;
+                                            }
+                                        }
                                     }
-                                }
+                                })
+        
                             }
-                        })
-
-                    }
-                    setTimeout(() => {res.render('order_filled', { filled_order : temp });}, 100*currMenu.length); // to prevent rendering before results are computed above
-                    // setTimeout(() => {console.log(temp);}, 100);
-                }   
+                            res.render('order_filled', { filled_order : temp, orders: r1 }); // to prevent rendering before results are computed above
+                            // setTimeout(() => {console.log(temp);}, 100);
+                        }   
+                    })
+                }
             })
         }
     })
