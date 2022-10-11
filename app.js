@@ -1166,10 +1166,10 @@ app.get( "/order_filled", requiresAuth(), ( req, res ) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(read_receipt_sql, [req.oidc.user.email], (error, r1) => {
-                if (error)
-                    res.status(500).send(error)
-                else {
+            // db.execute(read_receipt_sql, [req.oidc.user.email], (error, r1) => {
+            //     if (error)
+            //         res.status(500).send(error)
+            //     else {
                     db.execute(read_num_menu_sql, (error, currMenu) => {
                         if (error)
                             res.status(500).send(error);
@@ -1194,12 +1194,12 @@ app.get( "/order_filled", requiresAuth(), ( req, res ) => {
                                 })
         
                             }
-                            res.render('order_filled', { filled_order : temp, orders: r1 }); // to prevent rendering before results are computed above
+                            res.render('order_filled', { filled_order : temp }); // to prevent rendering before results are computed above
                             // setTimeout(() => {console.log(temp);}, 100);
                         }   
                     })
-                }
-            })
+            //     }
+            // })
         }
     })
 } );
