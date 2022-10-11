@@ -14,11 +14,16 @@
 
         <div class="buffer"></div>
         <div class="statement">
-        <% for (let i=0; i<orders.length; i++) { %>
-            <tr><%= orders[i].item %></tr>
-            <tr><%= orders[i].quantity %></tr>
-
-        <% } %>
+            <p>
+                Error: The available orders for 
+                <% for (let j = 0; j < filled_order.length; j++) { %>
+                    <%= filled_order[j] %>
+                    <% if (j+1 != filled_order.length && filled_order[j] != null) { %>
+                        and
+                    <% }
+                } %> 
+                have been filled already.
+            </p>
         </div>
     
         <div class = "button">
