@@ -28,6 +28,7 @@
                         <td><b>Menu Name</b></td>
                         <td><b>Price</b></td>
                         <td><b>Calories (per item)</b></td>
+                        <td><b>Available Qty</b></td>
 
                     </tr>
                 </thead>
@@ -37,7 +38,7 @@
                         <td><%= menu_item %></td>
                         <td>$<%= price %></td>
                         <td><%= calories %> kcal</td>
-                        
+                        <td><%= numAvail %></td>
                     </tr>
                 </tbody>
             </table>
@@ -79,24 +80,28 @@
                     </div> -->
                     <div class="row">
                     
-                        <div class="input-field col s4">
+                        <div class="input-field col s6">
                             <label for="menu">Menu Name:</label>
                             <input type="text" name="menu" value="<%= menu_item %>" data-length="100" required>
                         </div>
 
-                        <div class="input-field col s4">
+                        <div class="input-field col s2">
                             <label for="price">Price:</label>
                             <input type="number" name="price" value="<%= price %>" required>
                         </div>
 
-                        <div class="input-field col s4">
+                        <div class="input-field col s2">
                             <label for="calories">Calories:</label>
                             <input type="number" name="calories" value="<%= calories %>" required>
+                        </div>
+                        <div class="input-field col s2">
+                            <label for="numAvail">Qty</label>
+                            <input type="number" name="numAvail" value="<%= numAvail %>" required>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="input-field col s10">
+                        <div class="input-field col s12">
                             <label for="description">Description:</label>
                             <input type="text" name="description" value="<%= description %>" data-length="250">
                         </div>

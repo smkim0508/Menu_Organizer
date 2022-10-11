@@ -25,6 +25,7 @@
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Sum</th>
+                <th>Special Requests</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
                 <td><%= inventory[i].menu_item %></td>
                 <td><%= inventory[i].quantity %></td>
                 <td>$<%= inventory[i].price*inventory[i].quantity %></td>
+                <td><%= inventory[i].requests %></td>
             </tr>
 
             <% } %>

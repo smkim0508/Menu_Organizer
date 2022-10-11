@@ -14,6 +14,7 @@ CREATE TABLE status (
     date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     item VARCHAR (100) NOT NULL,
     quantity INT NOT NULL,
+    requests VARCHAR(250) NULL,
     isComplete INT NOT NULL,
     PRIMARY KEY (history_id) 
     );

@@ -13,14 +13,26 @@
 <div class="white-text">
 <div class="container">
         <div class="fixed-action-btn" style="bottom: 180px; right: 24px;">
-            <% if (incompleteOrders.length >= numOrders) { %>
-            <a href="/order_filled" class="btn-floating btn-large red">
+            
+            <% let counter = 0;
+            for (let i=0; i<menu.length; i++) {
+                if (incompleteOrders[i] >= menu[i].numAvail) { 
+                    counter += 1
+                } 
+            } 
+
+            if (counter > 0) { %>
+                <a href="/order_filled" class="btn-floating btn-large red">
+                    <i class="large material-icons">shopping_cart</i>
+                </a>
             <% }
             else { %>
-            <a href="/checkout" class="btn-floating btn-large red">
-            <% } %>   
-              <i class="large material-icons">shopping_cart</i>
-            </a>
+                <a href="/checkout" class="btn-floating btn-large red">
+                    <i class="large material-icons">shopping_cart</i>
+                </a>
+            <% } %>
+            
+
         </div>
         <div class="fixed-action-btn" style="bottom: 100px; right: 24px;">
             <a href="/history_user" class="btn-floating btn-large red">
@@ -34,21 +46,35 @@
         </div>
     <div class="section" id="DailyMenu">
         <!-- announcement bar -->
-        <% if (incompleteOrders.length >= numOrders) { %>
-            <div class="row">
+        <% let temp = [];
+            for (let i=0; i<menu.length; i++) {
+                if (incompleteOrders[i] >= menu[i].numAvail) { 
+                    temp[i] = menu[i].menu_item
+                } 
+            } 
+
+        if (temp.length > 0) { %>
+        
                 <div class="col s12 m8">
                   <div class="card red lighten-2">
                     <div class="card-content white-text">
-                      <span class="card-title">Unable to Checkout At this Time!</span>
-                      <p>The available orders for this week has been filled already.</p>
+                      <span class="card-title">Notice:</span>
+                      <p>The available orders for 
+                        <% for (let j = 0; j < temp.length; j++) { %>
+                            <%= temp[j] %>
+                            <% if (j+1 != temp.length && temp[j] != null) { %>
+                                and
+                            <% }
+                        } %> 
+                        this week has been filled already.</p>
                     </div>
                   </div>
                 </div>
-              </div>
+         
         <% }
         else { %>
-            <div class="row">
-                <div class="col s12 m6">
+        
+                <div class="col s12 m8">
                   <div class="card green lighten-2">
                     <div class="card-content white-text">
                       <span class="card-title">No Error</span>
@@ -56,8 +82,10 @@
                     </div>
                   </div>
                 </div>
-              </div>
+      
         <% } %>
+
+        
         <h2>Today's Menu:</h2>
     <table>
         <div class = "center">
@@ -103,7 +131,7 @@
                 <td>$<%= orders[i].price*orders[i].quantity %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=orders[i].order_id %>"><i
-                            class="material-icons right">edit</i>Edit</a>
+                            class="material-icons right">edit</i>Details</a>
                     <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=orders[i].order_id %>/delete"><i
                             class="material-icons right">delete</i>Delete</a>
                 </td>
@@ -145,7 +173,6 @@
                 <div class="input-field col s6">
                     <label for="quantity"><div class="input-color">Quantity</div></label>
                     <input type="number" name="quantity" class="validate" value="1" required>
-                    
                 </div>
             </div>
             <div class="row">

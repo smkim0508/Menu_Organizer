@@ -12,6 +12,7 @@
 <body class="orange lighten-2">
 <div class="white-text">
 <div class="container">
+
     <div class="section" id="MenuList">
         <h2>Edit Menu:</h2>
     <table>
@@ -22,6 +23,7 @@
                 <th>Price</th>
                 <th>Calories</th>
                 <th>Description</th>
+                <th>Qty</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +33,7 @@
                 <td>$<%= inventory[i].price %></td>
                 <td><%= inventory[i].calories %></td>
                 <td><%= inventory[i].description %></td>
+                <td><%= inventory[i].numAvail %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=inventory[i].menu_id %>"><i
                             class="material-icons right">edit</i>Edit</a>
@@ -50,22 +53,28 @@
         <!-- form here -->
         <form class="col s12" method="post">
             <div class="row">
-                <div class="input-field col s4">
+                <div class="input-field col s6">
                 
                     <label for="menu_item"><div class="input-color">Item Name</div></label>
                     <input type="text" name="menu" class="validate" data-length="100" color="white" required>
 
                 </div>
-                <div class="input-field col s4">
+                <div class="input-field col s2">
                 
                     <label for="price"><div class="input-color">Price ($)</div></label>
                     <input type="number" name="price" class="validate" value="5" required>
                     
                 </div>
-                <div class="input-field col s4">
+                <div class="input-field col s2">
                 
                     <label for="calories"><div class="input-color">Calories (Kcal)</div></label>
                     <input type="number" name="calories" class="validate" value="100" required>
+                    
+                </div>
+                <div class="input-field col s2">
+                
+                    <label for="numAvail"><div class="input-color">Available Quantity</div></label>
+                    <input type="number" name="numAvail" class="validate" value="5" required>
                     
                 </div>
             </div>

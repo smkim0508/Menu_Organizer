@@ -150,7 +150,7 @@ const read_sum_sql =`
 `
 const read_menu_sql = `
     SELECT
-        menu_id, menu_item, price, calories, description
+        menu_id, menu_item, price, calories, description, numAvail
     FROM
         menu
 `
@@ -175,13 +175,27 @@ const check_user_match_sql = `
 // display "order has been filled for this week" if the number of incompleted orders exceed a certain quota
 
 // counts the number of incompleted orders
+// const count_number_incompleted_orders = `
+//     SELECT 
+//         status.isComplete, status.item, status.quantity
+//     FROM
+//         status
+//     INNER JOIN
+//         orders ON orders.item = status.item
+//     WHERE
+//         status.isComplete = 0
+//         AND
+//         orders.item = ?
+// `
 const count_number_incompleted_orders = `
     SELECT 
-        isComplete
+        status.isComplete, status.item, SUM (status.quantity) sum
     FROM
         status
     WHERE
         isComplete = 0
+        AND
+        item = ?
 `
 // counts the number of designated orders taken per week
 const count_number_orders_week = `
@@ -217,34 +231,42 @@ app.get("/menu", requiresAuth(), (req, res) => {
                 }
                 else {
                     console.log("user is a user");
-                    db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
+                    db.execute(read_menu_sql, (error, currMenu) => {
+                        // console.log(currMenu)
                         if (error)
                             res.status(500).send(error);
                         else {
-                            db.execute(read_menu_sql, (error, results4) => {
+                            let numIncomplete = [];
+                            // const numIncomplete = new Array(currMenu.length).fill(0);
+                            for (let i = 0; i < currMenu.length; i++) {
+                                // console.log(currMenu.length)
+                                db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
+                                    if (error)
+                                        res.status(500).send(error);
+                                    else {
+                                        if (num[0].sum == null) {
+                                            numIncomplete[i] = 0;
+                                        }
+                                        else {
+                                            numIncomplete[i] = num[0].sum;
+                                        }
+                                        // console.log(num[0].sum)
+                                    }
+                                })
+
+                            }
+                            db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
                                 if (error)
                                     res.status(500).send(error);
                                 else {
-                                    db.execute(read_sum_sql, [req.oidc.user.email], (error, results5) => {
+                                    db.execute(read_sum_sql, [req.oidc.user.email], (error, results4) => {
                                         if (error)
                                             res.status(500).send(error);
                                         else {
-                                            db.execute(count_number_orders_week, (error, results6) => {
-                                                if (error)
-                                                    res.status(500).send(error);
-                                                else {
-                                                    db.execute(count_number_incompleted_orders, (error, results7) => {
-                                                        if (error)
-                                                            res.status(500).send(error);
-                                                        else {
-                                                            res.render('menu', { orders : results3, menu : results4, username : req.oidc.user.name, sum : results5[0].sum, numOrders : results6[0].numOrders, incompleteOrders : results7 });
-                                                            // console.log(results6[0].numOrders)
-                                                            // console.log(results7.length)
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        } 
+                                            // console.log(numIncomplete)
+                                            // console.log(currMenu)
+                                            res.render('menu', { orders : results3, menu : currMenu, username : req.oidc.user.name, sum : results4[0].sum, incompleteOrders : numIncomplete });
+                                        }
                                     })
                                 }
                             })
@@ -285,7 +307,7 @@ app.get("/admin_edit", requiresAuth(), (req, res) => {
 // render the menu edit page for admins
 const read_edit_menu_sql = `
     SELECT
-        menu_id, menu_item, price, calories, description
+        menu_id, menu_item, price, calories, description, numAvail
     FROM
         menu
 `
@@ -301,8 +323,9 @@ app.get( "/edit", requiresAuth(), ( req, res ) => {
             db.execute(read_edit_menu_sql, (error, results) => {
                 if (error)
                     res.status(500).send(error);
-                else   
+                else  {
                     res.render("menu_edit", { inventory : results });
+                }     
             })
         }
     })
@@ -530,9 +553,9 @@ app.post("/menu", requiresAuth(), (req, res) => {
 // allow admins to create new menu items
 const create_menu_sql = `
     INSERT INTO menu
-        (menu_item, price, calories, description)
+        (menu_item, price, calories, description, numAvail)
     VALUES
-        (?, ?, ?, ?)
+        (?, ?, ?, ?, ?)
 `
 
 app.post("/edit", requiresAuth(), (req, res) => {
@@ -543,7 +566,7 @@ app.post("/edit", requiresAuth(), (req, res) => {
             res.redirect("/access_denied")
         }
         else {
-            db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description], (error, results) => {
+            db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail], (error, results) => {
                 if (error)
                     res.status(500).send(error); //internal server error
                 else {
@@ -599,7 +622,7 @@ app.get( "/menu/item/:id", requiresAuth(), (req, res ) => {
 // render each item edit page with parameters
 const read_edit_item_sql = `
     SELECT
-        menu_id, menu_item, price, calories, description
+        menu_id, menu_item, price, calories, description, numAvail
     FROM
         menu
     WHERE
@@ -669,7 +692,8 @@ const update_menu_sql = `
         menu_item = ?,
         price = ?,
         calories = ?,
-        description = ?
+        description = ?,
+        numAvail = ?
     WHERE
         menu_id = ?
 `
@@ -681,7 +705,7 @@ app.post("/edit/item/:id", requiresAuth(), (req,res) => {
             res.redirect("/access_denied")
         }
         else {
-            db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.params.id], (error, results) => {
+            db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail, req.params.id], (error, results) => {
                 if (error)
                     res.status(500).send(error); //internal server error
                 else {
@@ -705,7 +729,7 @@ app.post("/edit/item/:id", requiresAuth(), (req,res) => {
 
 const read_receipt_sql =`
     SELECT
-        orders.order_id, orders.item, orders.quantity, menu.menu_id, menu.menu_item, menu.price
+        orders.order_id, orders.item, orders.quantity, orders.requests, menu.menu_id, menu.menu_item, menu.price, menu.numAvail
     FROM
         orders
     INNER JOIN
@@ -725,7 +749,22 @@ const read_receipt_sum_sql =`
         email = ?
 `
 
+const read_num_menu_sql =`
+    SELECT
+        menu_item, numAvail
+    FROM
+        menu
+`
+
 const record_order_history_sql =`
+    INSERT INTO 
+        status (username, email, item, quantity, requests, isComplete)
+    VALUES
+        (?, ?, ?, ?, ?, ?)
+`
+
+// adjusted sql for when the user gives no special requests
+const record_order_history_sql_null =`
     INSERT INTO 
         status (username, email, item, quantity, isComplete)
     VALUES
@@ -741,38 +780,56 @@ app.get("/checkout", requiresAuth(), (req, res) => {
             res.redirect("/admin")
         }
         else {
-            db.execute(count_number_incompleted_orders, (error, results) => {
+            db.execute(read_num_menu_sql, (error, currMenu) => {
                 if (error)
                     res.status(500).send(error);
                 else {
-                    db.execute(count_number_orders_week, (error, results2) => {
+                    let numIncomplete = [];
+                    let temp = [];
+                    // const numIncomplete = new Array(currMenu.length).fill(0);
+                    for (let i = 0; i < currMenu.length; i++) {
+                        // console.log(currMenu.length)
+                        db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
+                            if (error)
+                                res.status(500).send(error);
+                            else {
+                                if (num[0].sum == null) {
+                                    numIncomplete[i] = 0;
+                                }
+                                else {
+                                    numIncomplete[i] = num[0].sum;
+                                    if (numIncomplete[i] >= currMenu[i].numAvail) {
+                                        temp[i] = currMenu[i].menu_item;
+                                    }
+                                    // console.log(numIncomplete[i])
+                                    // console.log(currMenu[i].numAvail);
+                                }
+                                // console.log(num[0].sum)
+                            }
+                        })
+
+                    }
+                    db.execute(read_receipt_sql, [req.oidc.user.email], (error, results3) => {
                         if (error)
                             res.status(500).send(error);
                         else {
-                            if (results.length >= results2[0].numOrders) {
-                                res.redirect('/order_filled');
-                            }
-                            else {
-                                db.execute(read_receipt_sql, [req.oidc.user.email], (error, results3) => {
-                                    if (error)
-                                        res.status(500).send(error);
-                                    else {
-                                        db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results4) => {
-                                            if (error)
-                                                res.status(500).send(error);
-                                            else {
-                                                // console.log(results)
-                                                // console.log(results2[0].sum)
-                                                res.render('checkout', {inventory : results3, sum : results4[0].sum })
-                                                
-                                            }
-                                        })
+                            db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results4) => {
+                                if (error)
+                                    res.status(500).send(error);
+                                else {
+                                    if (temp.length > 0) {
+                                        res.redirect('/order_filled');
+                                        // console.log(temp)
                                     }
-                                })
-                            }
+                                    else {
+                                        res.render('checkout', { inventory : results3, sum : results4[0].sum })
+                                    }
+                                }
+                            })
                         }
                     })
-                }
+                    
+                }   
             })
         }
     })
@@ -796,10 +853,18 @@ app.get("/success", requiresAuth(), (req, res) => {
                             res.status(500).send(error);
                         else {
                             for (i=0; i<results.length; i++) {
-                                db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, "0"], (error, results3) => {
-                                    if (error)
-                                        res.status(500).send(error);
-                                })
+                                if (results[i].requests == null) {
+                                    db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, "0"], (error, results3) => {
+                                        if (error)
+                                            res.status(500).send(error);
+                                    })
+                                }
+                                else {
+                                    db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, results[i].requests, "0"], (error, results3) => {
+                                        if (error)
+                                            res.status(500).send(error);
+                                    })
+                                } 
                             }
                             res.render('order_success', {inventory : results, sum : results2[0].sum })        
                         }
@@ -816,7 +881,7 @@ const read_history_user_sql =`
     SELECT
         username, 
         left(date, length(date) - char('G', reverse(date) + 'G')) as date,
-        item, quantity, isComplete
+        item, quantity, requests, isComplete
     FROM
         status
     WHERE
@@ -864,7 +929,7 @@ app.get("/history_user", requiresAuth(), (req, res) => {
 const read_history_admin_sql =`
     SELECT
         left(status.date, length(date) - char('G', reverse(date) + 'G')) as date,
-        status.history_id, users.username, status.item, status.quantity, status.isComplete, users.user_id
+        status.history_id, users.username, status.item, status.quantity, status.requests, status.isComplete, users.user_id
     FROM
         status
     INNER JOIN
@@ -910,7 +975,7 @@ const read_history_admin_complete_sql =`
     SELECT
         history_id, 
         left(date, length(date) - char('G', reverse(date) + 'G')) as date, 
-        username, email, item, quantity, isComplete
+        username, email, item, quantity, requests, isComplete
     FROM
         status
 `
@@ -1066,7 +1131,7 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 //     })
 // })
 
-// Error page when the orders for the week has been completed already
+// // Error page when the orders for the week has been completed already
 app.get( "/order_filled", requiresAuth(), ( req, res ) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
@@ -1075,7 +1140,34 @@ app.get( "/order_filled", requiresAuth(), ( req, res ) => {
             res.redirect("/admin")
         }
         else {
-            res.render('order_filled');
+            db.execute(read_num_menu_sql, (error, currMenu) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    let numIncomplete = [];
+                    let temp = [];
+                    for (let i = 0; i < currMenu.length; i++) {
+                        db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
+                            if (error)
+                                res.status(500).send(error);
+                            else {
+                                if (num[0].sum == null) {
+                                    numIncomplete[i] = 0;
+                                }
+                                else {
+                                    numIncomplete[i] = num[0].sum;
+                                    if (numIncomplete[i] >= currMenu[i].numAvail) {
+                                        temp[i] = currMenu[i].menu_item;
+                                    }
+                                }
+                            }
+                        })
+
+                    }
+                    setTimeout(() => {res.render('order_filled', { filled_order : temp });}, 100*currMenu.length); // to prevent rendering before results are computed above
+                    // setTimeout(() => {console.log(temp);}, 100);
+                }   
+            })
         }
     })
 } );

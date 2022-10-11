@@ -14,8 +14,15 @@
 
         <div class="buffer"></div>
         <div class="statement">
-        <p>Error: The orders for this week have been filled already!</p>
-        <p>Please check back at a later date to proceed with checkout.</p>
+        <p>Error: The orders for 
+            <% for (let i=0; i<filled_order.length; i++) { %>
+                <%= filled_order[i] %>
+                <% if (i+1 != filled_order.length && filled_order[i] != null) { %>
+                    and
+                <% }
+            } %>
+            have been filled already!</p>
+        <p>Please check back at another time to proceed with checkout.</p>
         </div>
     
         <div class = "button">
