@@ -13,26 +13,9 @@
 <div class="white-text">
 <div class="container">
         <div class="fixed-action-btn" style="bottom: 180px; right: 24px;">
-            
-            <% let counter = 0;
-            for (let i=0; i<menu.length; i++) {
-                if (incompleteOrders[i] >= menu[i].numAvail) { 
-                    counter += 1
-                } 
-            } 
-
-            if (counter > 0) { %>
-                <a href="/order_filled" class="btn-floating btn-large red">
-                    <i class="large material-icons">shopping_cart</i>
-                </a>
-            <% }
-            else { %>
                 <a href="/checkout" class="btn-floating btn-large red">
                     <i class="large material-icons">shopping_cart</i>
                 </a>
-            <% } %>
-            
-
         </div>
         <div class="fixed-action-btn" style="bottom: 100px; right: 24px;">
             <a href="/history_user" class="btn-floating btn-large red">
@@ -66,7 +49,7 @@
                                 and
                             <% }
                         } %> 
-                        this week has been filled already.</p>
+                        have been filled already.</p>
                     </div>
                   </div>
                 </div>
