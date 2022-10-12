@@ -1207,7 +1207,7 @@ app.get( "/order_filled", requiresAuth(), ( req, res ) => {
                             }
                         })
                     }       
-                    res.render('order_filled', { filled_order : temp });
+                    setTimeout(() => {res.render('order_filled', { filled_order : temp });}, 500);
                 }   
             })
         }
