@@ -12,7 +12,14 @@ const port = process.env.PORT;
 app.set("views", __dirname + "/views")
 app.set("view engine", "ejs");
 
-const db = require('./db/db_pool')
+let db;
+try {
+    (async () => {
+        db = await require('./db/db_pool');
+    })()
+} catch (err) {
+    console.log(`Error while establishing connection, ${err}`);
+}
 
 //auth 0 stuff
 const { auth } = require('express-openid-connect');
@@ -198,84 +205,117 @@ const count_number_incompleted_orders = `
         item = ?
 `
 // counts the number of designated orders taken per week
-const count_number_orders_week = `
+const read_orderBy_sql = `
     SELECT
-        numOrders
+        orderBy
     FROM
         settings
 `
 
 //renders the menu and the ordering page and checks if logged in user is within the admin db and checks for the number of completed orders for the week
 
-app.get("/menu", requiresAuth(), (req, res) => {
-    db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
-        if (error)
-            res.status(500).send(error);
-        else {
-            if (results.length == 0) {
-                db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email], (error) => {
-                    if (error)
-                        res.status(500).send(error);
-                })
-                console.log("added user to db");
-            }
-            else {
-                console.log("user exists in db");
-            }
-            db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results2) => {
-                if (error)
-                    res.status(500).send(error);
-                else if (results2[0].isAdmin == 1) {
-                    res.redirect("/admin")
-                    console.log("user is an admin");
-                }
-                else {
-                    console.log("user is a user");
-                    db.execute(read_menu_sql, (error, currMenu) => {
-                        // console.log(currMenu)
-                        if (error)
-                            res.status(500).send(error);
-                        else {
-                            let numIncomplete = [];
-                            // const numIncomplete = new Array(currMenu.length).fill(0);
-                            for (let i = 0; i < currMenu.length; i++) {
-                                // console.log(currMenu.length)
-                                db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-                                    if (error)
-                                        res.status(500).send(error);
-                                    else {
-                                        if (num[0].sum == null) {
-                                            numIncomplete[i] = 0;
-                                        }
-                                        else {
-                                            numIncomplete[i] = num[0].sum;
-                                        }
-                                        // console.log(num[0].sum)
-                                    }
-                                })
-
-                            }
-                            db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
-                                if (error)
-                                    res.status(500).send(error);
-                                else {
-                                    db.execute(read_sum_sql, [req.oidc.user.email], (error, results4) => {
-                                        if (error)
-                                            res.status(500).send(error);
-                                        else {
-                                            // console.log(numIncomplete)
-                                            // console.log(currMenu)
-                                            res.render('menu', { orders : results3, menu : currMenu, username : req.oidc.user.name, sum : results4[0].sum, incompleteOrders : numIncomplete });
-                                        }
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
-            })
+app.get("/menu", requiresAuth(), async (req, res) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
         }
-    })
+
+        let [menu, _m] = await db.execute(read_menu_sql);
+        let numIncomplete = [];
+        for (let i = 0; i < menu.length; i++) {
+            let [incomplete_orders, _o] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
+            if (incomplete_orders[0].sum == null) {
+                numIncomplete[i] = 0;
+            } else {
+                numIncomplete[i] = incomplete_orders[0].sum
+            }
+        }
+        let [read_orders, _r] = await db.execute(read_combined_all_sql, [req.oidc.user.email]);
+        let [read_sum, _s] = await db.execute(read_sum_sql, [req.oidc.user.email]);
+        let [orderBy, _by] = await db.execute(read_orderBy_sql);
+        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, orderBy: orderBy[0].orderBy, incompleteOrders: numIncomplete })
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+
+    // db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
+    //     if (error)
+    //         res.status(500).send(error);
+    //     else {
+    //         if (results.length == 0) {
+    //             db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email], (error) => {
+    //                 if (error)
+    //                     res.status(500).send(error);
+    //             })
+    //             console.log("added user to db");
+    //         }
+    //         else {
+    //             console.log("user exists in db");
+    //         }
+    //         db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results2) => {
+    //             if (error)
+    //                 res.status(500).send(error);
+    //             else if (results2[0].isAdmin == 1) {
+    //                 res.redirect("/admin")
+    //                 console.log("user is an admin");
+    //             }
+    //             else {
+    //                 console.log("user is a user");
+    //                 db.execute(read_menu_sql, (error, currMenu) => {
+    //                     // console.log(currMenu)
+    //                     if (error)
+    //                         res.status(500).send(error);
+    //                     else {
+    //                         let numIncomplete = [];
+    //                         // const numIncomplete = new Array(currMenu.length).fill(0);
+    //                         for (let i = 0; i < currMenu.length; i++) {
+    //                             // console.log(currMenu.length)
+    //                             db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
+    //                                 if (error)
+    //                                     res.status(500).send(error);
+    //                                 else {
+    //                                     if (num[0].sum == null) {
+    //                                         numIncomplete[i] = 0;
+    //                                     }
+    //                                     else {
+    //                                         numIncomplete[i] = num[0].sum;
+    //                                     }
+    //                                     // console.log(num[0].sum)
+    //                                 }
+    //                             })
+
+    //                         }
+    //                         db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
+    //                             if (error)
+    //                                 res.status(500).send(error);
+    //                             else {
+    //                                 db.execute(read_sum_sql, [req.oidc.user.email], (error, results4) => {
+    //                                     if (error)
+    //                                         res.status(500).send(error);
+    //                                     else {
+    //                                         db.execute(read_orderBy_sql, (error, results5) => {
+    //                                             if (error)
+    //                                                 res.status(500).send(error);
+    //                                             else {
+    //                                                 // console.log(numIncomplete)
+    //                                                 // console.log(currMenu)
+    //                                                 res.render('menu', { orders : results3, menu : currMenu, username : req.oidc.user.name, sum : results4[0].sum, orderBy: results5[0].orderBy, incompleteOrders : numIncomplete });
+    //                                             }
+    //                                         })
+    //                                     }
+    //                                 })
+    //                             }
+    //                         })
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     }
+    // })
 })
 
 // render the users database on admin page
@@ -286,22 +326,42 @@ const read_admin_edit_sql = `
         users
 `
 
-app.get("/admin_edit", requiresAuth(), (req, res) => {
-    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-        if (error)
-            res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+
+app.get("/admin_edit", requiresAuth(), async (req, res) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
+        }
+        let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
+        if (isAdmin[0].isAdmin == 0) {
             res.redirect("/access_denied")
         }
-        else {
-            db.execute(read_admin_edit_sql, (error, results) => {
-                if (error)
-                    res.status(500).send(error);
-                else
-                    res.render("admin_control", { userlist : results })
-            })
-        }
-    })
+
+        let [user_info, _info] = await db.execute(read_admin_edit_sql);
+        res.render("admin_control", { userlist: results });
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+    //     if (error)
+    //         res.status(500).send(error);
+    //     else if (results[0].isAdmin == 0) {
+    //         res.redirect("/access_denied")
+    //     }
+    //     else {
+    //         db.execute(read_admin_edit_sql, (error, results) => {
+    //             if (error)
+    //                 res.status(500).send(error);
+    //             else
+    //                 res.render("admin_control", { userlist : results })
+    //         })
+    //     }
+    // })
 })
 
 // render the menu edit page for admins
@@ -312,23 +372,50 @@ const read_edit_menu_sql = `
         menu
 `
 
-app.get( "/edit", requiresAuth(), ( req, res ) => {
-    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-        if (error)
-            res.status(500).send(error);
-        else if (results[0].isAdmin == 0) {
+app.get( "/edit", requiresAuth(), async (req, res) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
+        }
+        let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
+        if (isAdmin[0].isAdmin == 0) {
             res.redirect("/access_denied")
         }
-        else {
-            db.execute(read_edit_menu_sql, (error, results) => {
-                if (error)
-                    res.status(500).send(error);
-                else  {
-                    res.render("menu_edit", { inventory : results });
-                }     
-            })
-        }
-    })
+        
+        let [menu, _m] = await db.execute(read_edit_item_sql);
+        let [orderBy, _o] = await db.execute(read_orderBy_sql);
+
+        res.render("menu_edit", { menu: menu, orderBy: orderBy[0].orderBy })
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+    //     if (error)
+    //         res.status(500).send(error);
+    //     else if (results[0].isAdmin == 0) {
+    //         res.redirect("/access_denied")
+    //     }
+    //     else {
+    //         db.execute(read_edit_menu_sql, (error, results) => {
+    //             if (error)
+    //                 res.status(500).send(error);
+    //             else  {
+    //                 db.execute(read_orderBy_sql, (error, results2) => {
+    //                     if (error)
+    //                         res.status(500).send(error);
+    //                     else {
+    //                         res.render("menu_edit", { menu : results, orderBy: results2[0].orderBy });
+    //                     }
+    //                 })
+    //             }     
+    //         })
+    //     }
+    // })
 })
 
 // render the main admin page with corresponding credentials for each admin
@@ -341,7 +428,7 @@ const read_admin_sql = `
         email = ?
 `
 
-app.get( "/admin", requiresAuth(), (req, res) => {
+app.get( "/admin", requiresAuth(), async (req, res) => {
     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
         if (error)
             res.status(500).send(error);
@@ -570,6 +657,36 @@ app.post("/edit", requiresAuth(), (req, res) => {
                 if (error)
                     res.status(500).send(error); //internal server error
                 else {
+                    res.redirect('/edit');
+                }
+            })
+        }
+    })
+})
+
+// update the date that current set of orders are due by
+
+const update_orderBy_sql =`
+    UPDATE
+        settings
+    SET
+        orderBy = ?
+`
+
+app.put("/edit", requiresAuth(), (req, res) => {
+    console.log("hi")
+    db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
+        if (error)
+            res.status(500).send(error);
+        else if (results[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+        else {
+            db.execute(update_orderBy_sql, [req.body.orderBy], (error) => {
+                if (error)
+                    res.status(500).send(error);
+                else {
+                    console.log("success")
                     res.redirect('/edit');
                 }
             })
@@ -839,7 +956,7 @@ app.get("/checkout", requiresAuth(), (req, res) => {
                                     }
                                     else {
                                         // console.log("4")
-                                        res.render('checkout', { inventory : results3, sum : results4[0].sum })
+                                        res.render('checkout', { receipt : results3, sum : results4[0].sum })
                                     }
                                 }
                             }) 
@@ -882,7 +999,7 @@ app.get("/success", requiresAuth(), (req, res) => {
                                     })
                                 } 
                             }
-                            res.render('order_success', {inventory : results, sum : results2[0].sum })        
+                            res.render('order_success', {receipt : results, sum : results2[0].sum })        
                         }
                     })
                 }
@@ -932,7 +1049,7 @@ app.get("/history_user", requiresAuth(), (req, res) => {
                         res.render('no_order_history_users');
                     }
                     else {
-                        res.render('order_history_users', {inventory: results2});
+                        res.render('order_history_users', {history : results2});
                     }
                 }
             })
@@ -977,7 +1094,7 @@ app.get("/history_admin/:user", requiresAuth(), (req, res) => {
                         res.render('no_order_history_admin', [user_id = req.params.user]);
                     }
                     else {
-                    res.render('order_history_admin', {inventory: results2});
+                    res.render('order_history_admin', {history : results2});
                     }
                 }
             })
@@ -1012,7 +1129,7 @@ app.get("/history_admin_complete", requiresAuth(), (req, res) => {
                         res.render('no_order_history_complete');
                     }
                     else {
-                        res.render('order_history_complete', {inventory: results2})
+                        res.render('order_history_complete', {history : results2})
                     }
                 }
             })

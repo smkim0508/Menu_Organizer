@@ -32,20 +32,20 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < history.length; i++) { %>
             <tr>
-                <td><%= inventory[i].history_id %></td>
-                <td><%= inventory[i].date %></td>
-                <td><%= inventory[i].username %></td>
-                <td><%= inventory[i].email%></td>
-                <td><%= inventory[i].item %></td>
-                <td><%= inventory[i].quantity %></td>
-                <td><%= inventory[i].requests %></td>
-                <% if(inventory[i].isComplete == 1) { %>
-                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin_complete/<%= inventory[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
+                <td><%= history[i].history_id %></td>
+                <td><%= history[i].date %></td>
+                <td><%= history[i].username %></td>
+                <td><%= history[i].email%></td>
+                <td><%= history[i].item %></td>
+                <td><%= history[i].quantity %></td>
+                <td><%= history[i].requests %></td>
+                <% if(history[i].isComplete == 1) { %>
+                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin_complete/<%= history[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
                 <% }
                 else { %>
-                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin_complete/<%= inventory[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
+                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin_complete/<%= history[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
                 <% } %>
             </tr>
 

@@ -29,12 +29,12 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < receipt.length; i++) { %>
             <tr>
-                <td><%= inventory[i].menu_item %></td>
-                <td><%= inventory[i].quantity %></td>
-                <td>$<%= inventory[i].price*inventory[i].quantity %></td>
-                <td><%= inventory[i].requests %></td>
+                <td><%= receipt[i].menu_item %></td>
+                <td><%= receipt[i].quantity %></td>
+                <td>$<%= receipt[i].price*receipt[i].quantity %></td>
+                <td><%= receipt[i].requests %></td>
             </tr>
 
             <% } %>

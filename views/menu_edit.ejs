@@ -12,7 +12,20 @@
 <body class="orange lighten-2">
 <div class="white-text">
 <div class="container">
+    <div class="section" id="orderDate">
+        <h2>Take Orders By:</h2>
+        <form name="orderBy" method="post">
+            <div class="input-field col s4">
+                
+                <label for="orderBy"><div class="input-color"><%= orderBy %></div></label>
+                <input type="text" name="orderBy" class="validate" data-length="25" color="white" required>
 
+            </div>
+            <button class="btn waves-effect waves-light green" type="submit">
+                <i class="material-icons right">send</i>Add Item to Menu</button>
+        </form>
+
+    </div>
     <div class="section" id="MenuList">
         <h2>Edit Menu:</h2>
     <table>
@@ -27,17 +40,17 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < menu.length; i++) { %>
             <tr>
-                <td><%= inventory[i].menu_item %></td>
-                <td>$<%= inventory[i].price %></td>
-                <td><%= inventory[i].calories %></td>
-                <td><%= inventory[i].description %></td>
-                <td><%= inventory[i].numAvail %></td>
+                <td><%= menu[i].menu_item %></td>
+                <td>$<%= menu[i].price %></td>
+                <td><%= menu[i].calories %></td>
+                <td><%= menu[i].description %></td>
+                <td><%= menu[i].numAvail %></td>
                 <td>
-                    <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=inventory[i].menu_id %>"><i
+                    <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=menu[i].menu_id %>"><i
                             class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red" href="/edit/item/<%=inventory[i].menu_id %>/delete"><i
+                    <a class="btn-small waves-effect waves-light red" href="/edit/item/<%=menu[i].menu_id %>/delete"><i
                             class="material-icons right">delete</i>Delete</a>
                 </td>
             </tr>

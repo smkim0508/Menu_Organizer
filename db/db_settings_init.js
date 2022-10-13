@@ -8,7 +8,8 @@ db.execute(drop_settings_table_sql);
 
 const create_settings_table_sql = `
 CREATE TABLE settings ( 
-    numOrders INT NOT NULL
+    orderBy VARCHAR(25) NOT NULL
+
     );
 `
 
@@ -16,12 +17,12 @@ db.execute(create_settings_table_sql);
 
 const insert_settings_table_sql = `
     INSERT INTO
-        settings (numOrders)
+        settings (orderBy)
     VALUES 
         (?);
 `
 
-db.execute(insert_settings_table_sql, ["3"]);
+db.execute(insert_settings_table_sql, ["Date ??/??"]);
 
 const read_settings_table_sql = `SELECT * FROM settings`;
 

@@ -14,7 +14,7 @@
     <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
-        <p><%= inventory[0].username %>'s order history:</p>
+        <p><%= history[0].username %>'s order history:</p>
         </div>
         <div class="small_buffer"></div>
         <div class="table_font">
@@ -29,13 +29,13 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i = 0; i < inventory.length; i++) { %>
+            <% for(let i = 0; i < history.length; i++) { %>
             <tr>
-                <td><%= inventory[i].date %></td>
-                <td><%= inventory[i].item %></td>
-                <td><%= inventory[i].quantity %></td>
-                <td><%= inventory[i].requests %></td>
-                <% if(inventory[i].isComplete == 1) { %>
+                <td><%= history[i].date %></td>
+                <td><%= history[i].item %></td>
+                <td><%= history[i].quantity %></td>
+                <td><%= history[i].requests %></td>
+                <% if(history[i].isComplete == 1) { %>
                     <td>Y</td>
                 <% }
                 else { %>
