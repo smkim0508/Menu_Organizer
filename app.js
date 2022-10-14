@@ -793,10 +793,6 @@ app.post("/menu", requiresAuth(), async (req, res) => {
         } else {
             console.log("User exists in db")
         }
-        let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
-        if (isAdmin[0].isAdmin == 0) {
-            res.redirect("/access_denied")
-        }
 
         let [results, _r] = await db.execute(check_item_match_sql, [req.body.item]);
         if (results.length == 0) {
@@ -846,6 +842,14 @@ const create_menu_sql = `
     VALUES
         (?, ?, ?, ?, ?)
 `
+// update the date that current set of orders are due by
+
+const update_orderBy_sql =`
+    UPDATE
+        settings
+    SET
+        orderBy = ?
+`
 
 app.post("/edit", requiresAuth(), async (req, res) => {
     try {
@@ -860,11 +864,21 @@ app.post("/edit", requiresAuth(), async (req, res) => {
         if (isAdmin[0].isAdmin == 0) {
             res.redirect("/access_denied")
         }
-        // console.log(req);
-        await db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail]);
+
+        // console.log(req.body.orderBy);
+        // console.log(req.body.menu);
+
+        if (req.body.orderBy != null) {
+            console.log("1");
+            await db.execute(update_orderBy_sql, [req.body.orderBy]);
+        } 
+        if (req.body.menu != null) {
+            console.log("2");
+            await db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail]);
+        }
 
         res.redirect("/edit");
-        
+
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -886,14 +900,6 @@ app.post("/edit", requiresAuth(), async (req, res) => {
     // })
 })
 
-// update the date that current set of orders are due by
-
-const update_orderBy_sql =`
-    UPDATE
-        settings
-    SET
-        orderBy = ?
-`
 
 // combine with app.post above
 
@@ -1688,7 +1694,7 @@ app.get("/history_admin/:user_id/:history_id/order_completed", requiresAuth(), a
 
         await db.execute(completed_orders, [req.params.history_id]);
 
-        res.redirect("/history_admin" + req.params.user_id);
+        res.redirect("/history_admin/" + req.params.user_id);
 
     } catch (err) {
         res.status(500).send(err.message);
@@ -1727,7 +1733,7 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 
         await db.execute(not_completed_orders, [req.params.history_id]);
 
-        res.redirect("/history_admin" + req.params.user_id);
+        res.redirect("/history_admin/" + req.params.user_id);
 
     } catch (err) {
         res.status(500).send(err.message);

@@ -14,7 +14,7 @@
     <div class="center">
         <div class="small_buffer"></div>
         <div class="statement">
-        <p><%= inventory[0].username %>'s order history is shown below.</p>
+        <p><%= history[0].username %>'s order history is shown below.</p>
         </div>
         <div class="small_buffer"></div>
         <div class="table_font">
@@ -36,10 +36,10 @@
                 <td><%= history[i].quantity %></td>
                 <td><%= history[i].requests %></td>
                 <% if(history[i].isComplete == 1) { %>
-                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin/<%= history[i].user_id %>/<%= inventory[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
+                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin/<%= history[i].user_id %>/<%= history[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
                 <% }
                 else { %>
-                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin/<%= history[i].user_id %>/<%= inventory[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
+                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin/<%= history[i].user_id %>/<%= history[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
                 <% } %>
             </tr>
 
