@@ -94,16 +94,6 @@ app.get( "/menu/no_match", requiresAuth(), async ( req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         res.render('no_match');
-    //     }
-    // })
 } );
 
 // prevent and redirect users from attempting to view or edit an order that does not exist
@@ -122,16 +112,6 @@ app.get( "/menu/no_id_found", requiresAuth(), async ( req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         res.render('no_order_id_found');
-    //     }
-    // })
 } );
 
 // prevent and redirect admins from attempting to view or edit a menu item that does not exist
@@ -154,16 +134,6 @@ app.get( "/edit/no_id_found", requiresAuth(), async ( req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         res.render('no_menu_id_found');
-    //     }
-    // })
 } );
 
 // prevent and redirect users from attempting to access pages that require admin permissions
@@ -182,16 +152,6 @@ app.get( "/access_denied", requiresAuth(), async ( req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         res.render('access_denied');
-    //     }
-    // })
 } );
 
 // render all current orders for a particular user
@@ -244,18 +204,6 @@ const check_user_match_sql = `
 // display "order has been filled for this week" if the number of incompleted orders exceed a certain quota
 
 // counts the number of incompleted orders
-// const count_number_incompleted_orders = `
-//     SELECT 
-//         status.isComplete, status.item, status.quantity
-//     FROM
-//         status
-//     INNER JOIN
-//         orders ON orders.item = status.item
-//     WHERE
-//         status.isComplete = 0
-//         AND
-//         orders.item = ?
-// `
 const count_number_incompleted_orders = `
     SELECT 
         status.isComplete, status.item, SUM (status.quantity) sum
@@ -303,81 +251,6 @@ app.get("/menu", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-
-    // db.execute(check_user_match_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else {
-    //         if (results.length == 0) {
-    //             db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email], (error) => {
-    //                 if (error)
-    //                     res.status(500).send(error);
-    //             })
-    //             console.log("added user to db");
-    //         }
-    //         else {
-    //             console.log("user exists in db");
-    //         }
-    //         db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results2) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else if (results2[0].isAdmin == 1) {
-    //                 res.redirect("/admin")
-    //                 console.log("user is an admin");
-    //             }
-    //             else {
-    //                 console.log("user is a user");
-    //                 db.execute(read_menu_sql, (error, currMenu) => {
-    //                     // console.log(currMenu)
-    //                     if (error)
-    //                         res.status(500).send(error);
-    //                     else {
-    //                         let numIncomplete = [];
-    //                         // const numIncomplete = new Array(currMenu.length).fill(0);
-    //                         for (let i = 0; i < currMenu.length; i++) {
-    //                             // console.log(currMenu.length)
-    //                             db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-    //                                 if (error)
-    //                                     res.status(500).send(error);
-    //                                 else {
-    //                                     if (num[0].sum == null) {
-    //                                         numIncomplete[i] = 0;
-    //                                     }
-    //                                     else {
-    //                                         numIncomplete[i] = num[0].sum;
-    //                                     }
-    //                                     // console.log(num[0].sum)
-    //                                 }
-    //                             })
-
-    //                         }
-    //                         db.execute(read_combined_all_sql, [req.oidc.user.email], (error, results3) => {
-    //                             if (error)
-    //                                 res.status(500).send(error);
-    //                             else {
-    //                                 db.execute(read_sum_sql, [req.oidc.user.email], (error, results4) => {
-    //                                     if (error)
-    //                                         res.status(500).send(error);
-    //                                     else {
-    //                                         db.execute(read_orderBy_sql, (error, results5) => {
-    //                                             if (error)
-    //                                                 res.status(500).send(error);
-    //                                             else {
-    //                                                 // console.log(numIncomplete)
-    //                                                 // console.log(currMenu)
-    //                                                 res.render('menu', { orders : results3, menu : currMenu, username : req.oidc.user.name, sum : results4[0].sum, orderBy: results5[0].orderBy, incompleteOrders : numIncomplete });
-    //                                             }
-    //                                         })
-    //                                     }
-    //                                 })
-    //                             }
-    //                         })
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // render the users database on admin page
@@ -409,21 +282,6 @@ app.get("/admin_edit", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_admin_edit_sql, (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else
-    //                 res.render("admin_control", { userlist : results })
-    //         })
-    //     }
-    // })
 })
 
 // render the menu edit page for admins
@@ -456,28 +314,6 @@ app.get( "/edit", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_edit_menu_sql, (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else  {
-    //                 db.execute(read_orderBy_sql, (error, results2) => {
-    //                     if (error)
-    //                         res.status(500).send(error);
-    //                     else {
-    //                         res.render("menu_edit", { menu : results, orderBy: results2[0].orderBy });
-    //                     }
-    //                 })
-    //             }     
-    //         })
-    //     }
-    // })
 })
 
 // render the main admin page with corresponding credentials for each admin
@@ -511,20 +347,6 @@ app.get( "/admin", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_admin_sql, [req.oidc.user.email], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else
-    //                 res.render("admin_main", { results, username: req.oidc.user.name})
-    //     }) }
-    // })
 })
 
 // allow users to delete orders placed
@@ -553,22 +375,6 @@ app.get("/menu/item/:id/delete", requiresAuth(), async (req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(delete_orders_sql, [req.params.id], ( error, results ) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/menu");
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // allow admins to delete menu items from current menu
@@ -601,22 +407,6 @@ app.get("/edit/item/:id/delete", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(delete_menu_sql, [req.params.id], ( error, results ) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/edit");
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // allow admins to delete user information saved on the database
@@ -649,22 +439,6 @@ app.get("/admin_edit/:id/delete", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(delete_user_sql, [req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/admin_edit");
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // allow admins to promote users into admins
@@ -698,22 +472,6 @@ app.get("/admin_edit/:id/promote", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(promote_admin_sql, [req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/admin_edit");
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // allow *certain* admins to demote other admins back to a user
@@ -747,22 +505,6 @@ app.get("/admin_edit/:id/demote", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(demote_admin_sql, [req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/admin_edit");
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // place new orders for users
@@ -805,34 +547,6 @@ app.post("/menu", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         // follows the "name" specified in the form function
-    //     // req.body.item
-    //     // req.body.quantity
-    //     db.execute(check_item_match_sql, [req.body.item], (error, results) => {
-    //         if (error)
-    //             res.status(500).send(error); //internal server error
-    //         else if (results.length == 0)
-    //             // res.status(404).send(`Please choose an item from the menu!`)
-    //             res.redirect('/menu/no_match');
-    //         else {
-    //             db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email], (error, results) => {
-    //                 if (error)
-    //                     res.status(500).send(error); //internal server error
-    //                 else {
-    //                     res.redirect('/menu');
-    //                 }
-    //             })
-    //         }
-    //     })
-    //     }
-    // })
 })
 
 // allow admins to create new menu items
@@ -882,47 +596,7 @@ app.post("/edit", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(create_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error); //internal server error
-    //             else {
-    //                 res.redirect('/edit');
-    //             }
-    //         })
-    //     }
-    // })
 })
-
-
-// combine with app.post above
-
-// app.post("/edit", requiresAuth(), async (req, res) => {
-//     console.log("hi")
-//     db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-//         if (error)
-//             res.status(500).send(error);
-//         else if (results[0].isAdmin == 0) {
-//             res.redirect("/access_denied")
-//         }
-//         else {
-//             db.execute(update_orderBy_sql, [req.body.orderBy], (error) => {
-//                 if (error)
-//                     res.status(500).send(error);
-//                 else {
-//                     console.log("success")
-//                     res.redirect('/edit');
-//                 }
-//             })
-//         }
-//     })
-// })
 
 // render each item with parameters
 const read_combined_item_sql =`
@@ -939,7 +613,7 @@ const read_combined_item_sql =`
 // SUM(orders.quantity*menu.price)
 // possibly to sum above
 
-//define a route for the item detail page
+// define a route for the item detail page
 app.get( "/menu/item/:id", requiresAuth(), async (req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
@@ -960,29 +634,6 @@ app.get( "/menu/item/:id", requiresAuth(), async (req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(read_combined_item_sql, [req.params.id, req.oidc.user.email], (error, results) => {
-
-    //             if(error)
-    //                 res.status(500).send(error); //internal service error
-    //             else if (results.length == 0)
-    //                 res.redirect('/menu/no_id_found');
-    //             else {
-    //                 let data = results[0];
-    //                 console.log("successfully rendered");
-    //                 // console.log(data);
-    //                 res.render('item', data) //send item.ejs as html but use "data" as context for template to be rendered with
-    //             }
-    //             // res.send(results[0]);
-    //         })
-    //     }
-    // })
 })
 
 // render each item edit page with parameters
@@ -1020,27 +671,6 @@ app.get( "/edit/item/:id", requiresAuth(), async (req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_edit_item_sql, [req.params.id], (error, results) => {
-    //             if(error)
-    //                 res.status(500).send(error); //internal service error
-    //             else if (results.length == 0)
-    //                 res.redirect('/edit/no_id_found');
-    //             else {
-    //                 let data = results[0];
-    //                 console.log("successfully rendered edit item page");
-        
-    //                 res.render('menu_item_edit', data)
-    //             }
-    //         })
-    //     }
-    // })
 });
 
 // allow users to update order details for each item
@@ -1072,22 +702,6 @@ app.post("/menu/item/:id", requiresAuth(), async (req,res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(update_item_sql, [req.body.quantity, req.body.request, req.oidc.user.email, req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error); //internal server error
-    //             else {
-    //                 res.redirect(`/menu/item/${req.params.id}`);
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // allow admins to update item details for each menu item
@@ -1124,22 +738,6 @@ app.post("/edit/item/:id", requiresAuth(), async (req,res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail, req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error); //internal server error
-    //             else {
-    //                 res.redirect(`/edit/item/${req.params.id}`);
-    //             }
-    //         })
-    //     }
-    // })    
 })
 
 // const order_success_sql = `
@@ -1250,71 +848,6 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(read_num_menu_sql, [req.oidc.user.email], (error, currMenu) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 let numIncomplete = [];
-    //                 let temp = [];
-    //                 // console.log(currMenu.length)
-    //                 for (let i = 0; i < currMenu.length; i++) {
-    //                     // console.log(currMenu)
-    //                     db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-    //                         if (error)
-    //                             res.status(500).send(error);
-    //                         else {
-    //                             db.execute(check_item_availability_sql, [currMenu[i].menu_item, req.oidc.user.email], (error, count) => {
-    //                                 // console.log(count)
-    //                                 if (error)
-    //                                     res.status(500).send(error);
-    //                                 else {
-    //                                     if (num[0].sum == null) {
-    //                                         numIncomplete[i] = 0;
-    //                                     }
-    //                                     else {
-    //                                         numIncomplete[i] = num[0].sum;
-    //                                     }
-    //                                     if (numIncomplete[i] >= currMenu[i].numAvail && count.length > 0) {
-    //                                             temp[i] = currMenu[i].menu_item;
-    //                                     }
-    //                                 }
-    //                                 // console.log("1")
-    //                             })
-    //                         }
-    //                         // console.log("2")
-    //                     })
-    //                 }
-    //                 // console.log("3")
-    //                 db.execute(read_receipt_sql, [req.oidc.user.email], (error, results3) => {
-    //                     if (error)
-    //                         res.status(500).send(error);
-    //                     else {
-    //                         db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results4) => {
-    //                             if (error)
-    //                                 res.status(500).send(error);
-    //                             else {
-    //                                 if (temp.length > 0) {
-    //                                     res.redirect('/order_filled');
-    //                                 }
-    //                                 else {
-    //                                     // console.log("4")
-    //                                     res.render('checkout', { receipt : results3, sum : results4[0].sum })
-    //                                 }
-    //                             }
-    //                         }) 
-    //                     }
-    //                 })
-    //             }   
-    //         })
-    //     }
-    // })
 })
 
 // renders the receipt again, but as reference post-order
@@ -1344,42 +877,6 @@ app.get("/success", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(read_receipt_sql, [req.oidc.user.email], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 db.execute(read_receipt_sum_sql, [req.oidc.user.email], (error, results2) => {
-    //                     if (error)
-    //                         res.status(500).send(error);
-    //                     else {
-    //                         for (i=0; i<results.length; i++) {
-    //                             if (results[i].requests == null) {
-    //                                 db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, "0"], (error, results3) => {
-    //                                     if (error)
-    //                                         res.status(500).send(error);
-    //                                 })
-    //                             }
-    //                             else {
-    //                                 db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, results[i].menu_item, results[i].quantity, results[i].requests, "0"], (error, results3) => {
-    //                                     if (error)
-    //                                         res.status(500).send(error);
-    //                                 })
-    //                             } 
-    //                         }
-    //                         res.render('order_success', {receipt : results, sum : results2[0].sum })        
-    //                     }
-    //                 })
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // rendering order history viewable by individual users
@@ -1394,6 +891,7 @@ const read_history_user_sql =`
     WHERE
         email = ?
 `
+
 // time zone setting 
 
 // const read_history_user_sql =`
@@ -1427,27 +925,6 @@ app.get("/history_user", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else {
-    //         db.execute(read_history_user_sql, [req.oidc.user.email], (error, results2) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 if (results2.length == 0) {
-    //                     res.render('no_order_history_users');
-    //                 }
-    //                 else {
-    //                     res.render('order_history_users', {history : results2});
-    //                 }
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // rendering order history for a specified user by admins
@@ -1495,28 +972,6 @@ app.get("/history_admin/:user", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_history_admin_sql, [req.params.user], (error, results2) => {
-    //             // console.log(results2.length);
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else { 
-    //                 if (results2.length == 0) {
-    //                     res.render('no_order_history_admin', [user_id = req.params.user]);
-    //                 }
-    //                 else {
-    //                 res.render('order_history_admin', {history : results2});
-    //                 }
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // rendering the complete order history for all users
@@ -1555,27 +1010,6 @@ app.get("/history_admin_complete", requiresAuth(), async (req, res) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(read_history_admin_complete_sql, (error, results2) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 if (results2.length == 0) {
-    //                     res.render('no_order_history_complete');
-    //                 }
-    //                 else {
-    //                     res.render('order_history_complete', {history : results2})
-    //                 }
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // adjust the completion status of orders in order history
@@ -1620,22 +1054,6 @@ app.get("/history_admin_complete/:id/order_completed", requiresAuth(), async (re
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(completed_orders, [req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/history_admin_complete")
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 app.get("/history_admin_complete/:id/order_not_completed", requiresAuth(), async (req, res) => {
@@ -1659,22 +1077,6 @@ app.get("/history_admin_complete/:id/order_not_completed", requiresAuth(), async
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(not_completed_orders, [req.params.id], (error, results) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/history_admin_complete")
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // order completion status update for individual user order history
@@ -1699,22 +1101,6 @@ app.get("/history_admin/:user_id/:history_id/order_completed", requiresAuth(), a
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(completed_orders, [req.params.history_id], (error, results2) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/history_admin/" + req.params.user_id)
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(), async (req, res) => {
@@ -1738,22 +1124,6 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 0) {
-    //         res.redirect("/access_denied")
-    //     }
-    //     else {
-    //         db.execute(not_completed_orders, [req.params.history_id], (error, results2) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 res.redirect("/history_admin/" + req.params.user_id)
-    //             }
-    //         })
-    //     }
-    // })
 })
 
 // redirect to no order history found page if no matching results return
@@ -1784,33 +1154,6 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 //         }
 //     })
 // })
-
-function createTemp(currMenu) {
-    let temp = [];
-    let numIncomplete = [];
-    console.log(currMenu.length);
-    for (let i = 0; i < currMenu.length; i++) {
-        db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-            if (error)
-                res.status(500).send(error);
-            else {
-                if (num[0].sum == null) {
-                    numIncomplete[i] = 0;
-                }
-                else {
-                    numIncomplete[i] = num[0].sum;
-                    if (numIncomplete[i] >= currMenu[i].numAvail) {
-                        temp[i] = currMenu[i].menu_item;
-                    }
-                }
-            }
-        })
-
-    }
-    const promiseB = new Promise(console.log(temp))
-    Promise.all([promiseA, promiseB])
-    return temp;
-}
 
 // // Error page when the selected orders for the week has been completed already
 app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
@@ -1845,42 +1188,6 @@ app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
     } catch (err) {
         res.status(500).send(err.message);
     }
-    // db.execute(check_admin_permission_sql, [req.oidc.user.email], (error, results) => {
-    //     if (error)
-    //         res.status(500).send(error);
-    //     else if (results[0].isAdmin == 1) {
-    //         res.redirect("/admin")
-    //     }
-    //     else { 
-    //         db.execute(read_num_menu_sql, (error, currMenu) => {
-    //             if (error)
-    //                 res.status(500).send(error);
-    //             else {
-    //                 let temp = [];
-    //                 let numIncomplete = [];
-    //                 // console.log(currMenu.length);
-    //                 for (let i = 0; i < currMenu.length; i++) {
-    //                     db.execute(count_number_incompleted_orders, [currMenu[i].menu_item], (error, num) => {
-    //                         if (error)
-    //                             res.status(500).send(error);
-    //                         else {
-    //                             if (num[0].sum == null) {
-    //                                 numIncomplete[i] = 0;
-    //                             }
-    //                             else {
-    //                                 numIncomplete[i] = num[0].sum;
-    //                                 if (numIncomplete[i] >= currMenu[i].numAvail) {
-    //                                     temp[i] = currMenu[i].menu_item;
-    //                                 }
-    //                             }
-    //                         }
-    //                     })
-    //                 }       
-    //                 setTimeout(() => {res.render('order_filled', { filled_order : temp });}, 500);
-    //             }   
-    //         })
-    //     }
-    // })
 } );
 
 // start the server
