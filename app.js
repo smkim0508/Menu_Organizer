@@ -303,7 +303,7 @@ app.get( "/edit", requiresAuth(), async (req, res) => {
         }
         let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
         if (isAdmin[0].isAdmin == 0) {
-            res.redirect("/access_denied")
+            res.redirect("/menu")
         }
         
         let [menu, _m] = await db.execute(read_edit_menu_sql);
