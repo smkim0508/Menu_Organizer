@@ -18,7 +18,7 @@
             </div>
             <div class="row">
                 <div class="item-image">
-                <img src="/images/<%= menu_item.toLowerCase() %>.jpg" width="550" height="400" alt="<%= menu_item %>">
+                <img src="/images/<%= detail.menu_item.toLowerCase() %>.jpg" width="550" height="400" alt="<%= detail.menu_item %>">
                 </div>
             </div>
             <table>
@@ -35,10 +35,10 @@
                 <tbody>
                     <tr>
                         <!-- <td>Hamburger</td> -->
-                        <td><%= menu_item %></td>
-                        <td>$<%= price %></td>
-                        <td><%= calories %> kcal</td>
-                        <td><%= numAvail %></td>
+                        <td><%= detail.menu_item %></td>
+                        <td>$<%= detail.price %></td>
+                        <td><%= detail.calories %> kcal</td>
+                        <td><%= detail.numAvail %></td>
                     </tr>
                 </tbody>
             </table>
@@ -50,7 +50,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td><%= description %></td>
+                    <td><%= detail.description %></td>
                 </tbody>
             </table>
         </div>
@@ -59,7 +59,7 @@
             <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
                 <i class="material-icons right">edit</i>Edit
             </a>
-            <a class="btn-large waves-effect waves-light red middle" href="/edit/item/<%= menu_id %>/delete">
+            <a class="btn-large waves-effect waves-light red middle" href="/edit/item/<%= detail.menu_id %>/delete">
                 <i class="material-icons right">delete</i>Delete Order
             </a>
             <a class="btn-large waves-effect waves-light blue right" href="/edit"> 
@@ -74,7 +74,7 @@
                 <h4>Edit Order:</h4>
                 </div>
                   <!-- form here -->
-                <form method="post" action="/edit/item/<%= menu_id %>"> 
+                <form method="post" action="/edit/item/<%= detail.menu_id %>"> 
                     <!-- <div class="item-image">
                         <img src="/images/burger_image.jpg" alt="burger">
                     </div> -->
@@ -82,28 +82,28 @@
                     
                         <div class="input-field col s6">
                             <label for="menu">Menu Name:</label>
-                            <input type="text" name="menu" value="<%= menu_item %>" data-length="100" required>
+                            <input type="text" name="menu" value="<%= detail.menu_item %>" data-length="100" required>
                         </div>
 
                         <div class="input-field col s2">
                             <label for="price">Price:</label>
-                            <input type="number" name="price" value="<%= price %>" required>
+                            <input type="number" name="price" value="<%= detail.price %>" required>
                         </div>
 
                         <div class="input-field col s2">
                             <label for="calories">Calories:</label>
-                            <input type="number" name="calories" value="<%= calories %>" required>
+                            <input type="number" name="calories" value="<%= detail.calories %>" required>
                         </div>
                         <div class="input-field col s2">
                             <label for="numAvail">Qty</label>
-                            <input type="number" name="numAvail" value="<%= numAvail %>" required>
+                            <input type="number" name="numAvail" value="<%= detail.numAvail %>" required>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="input-field col s12">
                             <label for="description">Description:</label>
-                            <input type="text" name="description" value="<%= description %>" data-length="250">
+                            <input type="text" name="description" value="<%= detail.description %>" data-length="250">
                         </div>
                     
                     </div>
