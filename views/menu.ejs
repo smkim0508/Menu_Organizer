@@ -79,6 +79,7 @@
                     <th>Price (per item)</th>
                     <th>Calories</th>
                     <th>Description</th>
+                    <th>Image</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,6 +89,7 @@
                     <td>$<%= menu[i].price %></td>
                     <td><%= menu[i].calories %></td>
                     <td><%= menu[i].description %></td>
+                    <td><img src="/images/<%= menu[i].menu_item.toLowerCase() %>.jpg" width="124" height="150" alt="<%= menu[i].menu_item %>"></td>
                 </tr>
     
                 <% } %>
