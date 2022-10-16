@@ -25,6 +25,7 @@
                 <th>Date</th>
                 <th>User</th>
                 <th>Email</th>
+                <th>Phone #</th>
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Requests</th>
@@ -38,6 +39,12 @@
                 <td><%= history[i].date %></td>
                 <td><%= history[i].username %></td>
                 <td><%= history[i].email%></td>
+                <% if(history[i].phone == null) { %>
+                    <td>N/A</td>
+                <% }
+                else { %>
+                    <td><%= history[i].phone %></td>
+                <% } %>
                 <td><%= history[i].item %></td>
                 <td><%= history[i].quantity %></td>
                 <td><%= history[i].requests %></td>

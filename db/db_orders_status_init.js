@@ -11,6 +11,7 @@ CREATE TABLE status (
     history_id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(45) NOT NULL, 
     email VARCHAR(45) NOT NULL,
+    phone VARCHAR(20) NULL,
     date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     item VARCHAR (100) NOT NULL,
     quantity INT NOT NULL,

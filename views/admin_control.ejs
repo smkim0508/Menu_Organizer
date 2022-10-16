@@ -24,6 +24,7 @@
                 <th>User ID</th>
                 <th>User</th>
                 <th>Email</th>
+                <th>Phone Number</th>
                 <th>Is Admin?</th>
                 <th>Actions</th>
                 <th>Order History</th>
@@ -35,6 +36,12 @@
                 <td><%= userlist[i].user_id %></td>
                 <td><%= userlist[i].username %></td>
                 <td><%= userlist[i].email %></td>
+                <% if(userlist[i].phone == null) { %>
+                    <td>N/A</td>
+                <% }
+                else { %>
+                    <td><%= userlist[i].phone %></td>
+                <% } %>
                 <td><%= userlist[i].isAdmin %></td>
                 <td>
                     <a class="btn-small waves-effect waves-light green" href="/admin_edit/<%=userlist[i].user_id %>/promote"><i

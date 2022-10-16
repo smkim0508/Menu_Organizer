@@ -42,16 +42,56 @@
         </table>
         <h6>Total: $<%= sum %> </h6>
         </div>
-        <div class = "horizontal_buffer">
-            
-            <table>
-                <td> <a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>return</a>
-                    <p></p>
-                    <a class="waves-effect waves-light btn-large green" href="/success"><i class="material-icons right">arrow_forward</i>complete order</a>
+
+        <div class="statement">
+        <div class="small_buffer">
+        <p>Contact information</p>
+        </div>
+        </div>
+
+        <form class="col s12" method="post" id="contacts">
+        <div class="table_font">
+        <table>
+            <tbody>
+            <tr>
+                <td>
+                    <div class="col s3" text-align="left">
+                        <p>Phone Number:</p>
+                    </div>
                 </td>
-            </table>
-        </div>
-        </div>
+                <td>
+                    <div class="input-field col s9">
+                        <label for="phone"><div class="input-color">Phone number</div></label>
+                        <input type="text" name="phone" class="validate" data-length="25" color="white">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="col s3" text-align="left">
+                        <p>Email:</p>
+                    </div>
+                </td>
+                <td>
+                    <div class="col s9">
+                        <p>&nbsp&nbsp&nbspemail</p>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="small_buffer"></div>
+
+         <table>
+            <td>
+                <a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>Edit Order</a>
+                <button class="btn-large waves-effect waves-light btn-large green" type="submit">
+                <i class="material-icons right">arrow_forward</i>Complete Order</button>
+            </td>
+        </table>
+        </form>
+
     </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

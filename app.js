@@ -256,7 +256,7 @@ app.get("/menu", requiresAuth(), async (req, res) => {
 // render the users database on admin page
 const read_admin_edit_sql = `
     SELECT
-        user_id, username, email, isAdmin
+        user_id, username, email, phone, isAdmin
     FROM
         users
 `
@@ -782,17 +782,17 @@ const read_num_menu_sql =`
 
 const record_order_history_sql =`
     INSERT INTO 
-        status (username, email, item, quantity, requests, isComplete)
+        status (username, email, phone, item, quantity, requests, isComplete)
     VALUES
-        (?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?)
 `
 
 // adjusted sql for when the user gives no special requests
 const record_order_history_sql_null =`
     INSERT INTO 
-        status (username, email, item, quantity, isComplete)
+        status (username, email, phone, item, quantity, isComplete)
     VALUES
-        (?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?)
 `
 
 // check if the item ordered is available
@@ -806,6 +806,27 @@ const check_item_availability_sql =`
         AND
         email = ?
 `
+
+// read if the user has a phone number associated with account
+const read_phone_sql =`
+    SELECT
+        phone
+    FROM
+        users
+    WHERE
+        email = ?
+`
+
+// add phone number to user db if users submits contacts information
+const update_phone_sql =`
+    UPDATE
+        users
+    SET
+        phone = ?
+    WHERE
+        email = ?
+`
+
 // renders the receipt during the checkout page as confirmation if the order for the week has not been filled yet
 app.get("/checkout", requiresAuth(), async (req, res) => {
     try {
@@ -819,6 +840,7 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
         let [sum, _s] = await db.execute(read_receipt_sum_sql, [req.oidc.user.email]);
+        let [phone, _p] = await db.execute(read_phone_sql, [req.oidc.user.email]);
 
         let [menu, _m] = await db.execute(read_num_menu_sql, [req.oidc.user.email]);
         let numIncomplete = [];
@@ -842,7 +864,8 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
             res.redirect("/order_filled");
         }
         else {
-            res.render("checkout", { receipt: receipt, sum: sum[0].sum });
+            // res.render("checkout", { receipt: receipt, sum: sum[0].sum });
+            res.render("checkout", { receipt: receipt, sum: sum[0].sum, email: req.oidc.user.email, phone: phone[0].phone });
         }
     
     } catch (err) {
@@ -863,16 +886,42 @@ app.get("/success", requiresAuth(), async (req, res) => {
 
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
         let [sum, _s] = await db.execute(read_receipt_sum_sql, [req.oidc.user.email]);
+
+        res.render("order_success", { receipt: receipt, sum: sum[0].sum });
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+})
+
+// action after submitting form on checkout page
+app.post("/checkout", requiresAuth(), async (req, res) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            await db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
+        }
+        
+        console.log("1");
+
+        let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
         for (let i=0; i<receipt.length; i++) {
+            console.log(i);
             if (receipt[i].requests == null) {
-                await db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, receipt[i].menu_item, receipt[i].quantity, "0"]);
+                await db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, "0"]);
             }
             else {
-                await db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, receipt[i].menu_item, receipt[i].quantity, receipt[i].requests, "0"]);
+                await db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, receipt[i].requests, "0"]);
             }
         }
 
-        res.render("order_success", { receipt: receipt, sum: sum[0].sum });
+        await db.execute(update_phone_sql, [req.body.phone, req.oidc.user.email]);
+        console.log("2");
+        res.redirect("/success");
+        console.log("3");
 
     } catch (err) {
         res.status(500).send(err.message);
@@ -980,7 +1029,7 @@ const read_history_admin_complete_sql =`
     SELECT
         history_id, 
         left(date, length(date) - char('G', reverse(date) + 'G')) as date, 
-        username, email, item, quantity, requests, isComplete
+        username, email, phone, item, quantity, requests, isComplete
     FROM
         status
 `
