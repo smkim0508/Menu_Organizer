@@ -247,6 +247,7 @@ app.get("/menu", requiresAuth(), async (req, res) => {
         let [read_orders, _r] = await db.execute(read_combined_all_sql, [req.oidc.user.email]);
         let [read_sum, _s] = await db.execute(read_sum_sql, [req.oidc.user.email]);
         let [read_notice, _by] = await db.execute(read_notice_sql);
+        console.log(numIncomplete);
         res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: read_notice[0], incompleteOrders: numIncomplete })
     } catch (err) {
         res.status(500).send(err.message);
@@ -797,9 +798,9 @@ const record_order_history_sql_null =`
 `
 
 // check if the item ordered is available
-const check_item_availability_sql =`
+const check_num_ordered_sql =`
     SELECT
-        item
+        SUM(quantity) sum
     FROM
         orders
     WHERE
@@ -840,32 +841,46 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         }
         
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
+        // console.log(receipt);
         let [sum, _s] = await db.execute(read_receipt_sum_sql, [req.oidc.user.email]);
         let [phone, _p] = await db.execute(read_phone_sql, [req.oidc.user.email]);
 
         let [menu, _m] = await db.execute(read_num_menu_sql, [req.oidc.user.email]);
         let numIncomplete = [];
-        let temp = [];
+        let temp1 = [];
+        let temp2 = [];
 
-        for (let i=0; i<menu.length; i++) {
-            let [incomplete_orders, _incomplete] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
-            let [availability, _a] = await db.execute(check_item_availability_sql, [menu[i].menu_item, req.oidc.user.email]);
+        for (i=0; i<menu.length; i++) {
+            let [incomplete_orders, _i] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
+            if (incomplete_orders[0].sum == null) {
+                numIncomplete[i] = 0;
+            } else {
+                numIncomplete[i] = incomplete_orders[0].sum;
+            } if (numIncomplete[i] >= menu[i].numAvail) {
+                temp1[i] = menu[i].menu_item;
+            }
+        }
+
+        for (let i=0; i<receipt.length; i++) {
+            let [ordered, _a] = await db.execute(check_num_ordered_sql, [receipt[i].menu_item, req.oidc.user.email]);
+            let [incomplete_orders, _incomplete] = await db.execute(count_number_incompleted_orders, [receipt[i].menu_item]);
             if (incomplete_orders[0].sum == null) {
                 numIncomplete[i] = 0;
             }
             else {
                 numIncomplete[i] = incomplete_orders[0].sum
-            }
-            if (numIncomplete[i] >= menu[i].numAvail && availability.length > 0) {
-                temp[i] = menu[i].menu_item;
+            } if (numIncomplete[i] >= receipt[i].numAvail - ordered[0].sum) {
+                temp2[i] = receipt[i].menu_item;
             }
         }
 
-        if (temp.length > 0) {
+        if (temp1.length > 0) {
             res.redirect("/order_filled");
         }
+        else if (temp2.length > 0) {
+            res.redirect("/insufficient");
+        }
         else {
-            // res.render("checkout", { receipt: receipt, sum: sum[0].sum });
             res.render("checkout", { receipt: receipt, sum: sum[0].sum, email: req.oidc.user.email, phone: phone[0].phone });
         }
     
@@ -905,8 +920,6 @@ app.post("/checkout", requiresAuth(), async (req, res) => {
         } else {
             console.log("User exists in db")
         }
-        
-        console.log("1");
 
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
         for (let i=0; i<receipt.length; i++) {
@@ -920,9 +933,8 @@ app.post("/checkout", requiresAuth(), async (req, res) => {
         }
 
         await db.execute(update_phone_sql, [req.body.phone, req.oidc.user.email]);
-        console.log("2");
+
         res.redirect("/success");
-        console.log("3");
 
     } catch (err) {
         res.status(500).send(err.message);
@@ -1227,9 +1239,8 @@ app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
                 numIncomplete[i] = 0;
             } else {
                 numIncomplete[i] = incomplete_orders[0].sum;
-                if (numIncomplete[i] >= menu[i].numAvail) {
-                    temp[i] = menu[i].menu_item;
-                }
+            } if (numIncomplete[i] >= menu[i].numAvail) {
+                temp[i] = menu[i].menu_item;
             }
         }
 
