@@ -697,7 +697,7 @@ app.post("/menu/item/:id", requiresAuth(), async (req,res) => {
         
         await db.execute(update_item_sql, [req.body.quantity, req.body.request, req.oidc.user.email, req.params.id]);
 
-        res.redirect("/menu/item/${req.params.id}")
+        res.redirect("/menu/item/" + req.params.id)
         
     } catch (err) {
         res.status(500).send(err.message);
@@ -733,7 +733,7 @@ app.post("/edit/item/:id", requiresAuth(), async (req,res) => {
         
         await db.execute(update_menu_sql, [req.body.menu, req.body.price, req.body.calories, req.body.description, req.body.numAvail, req.params.id]);
 
-        res.redirect("/edit/item/${req.params.id}");
+        res.redirect("/edit/item/" + req.params.id);
 
     } catch (err) {
         res.status(500).send(err.message);
