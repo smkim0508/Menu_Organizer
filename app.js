@@ -539,10 +539,10 @@ app.post("/menu", requiresAuth(), async (req, res) => {
         let [results, _r] = await db.execute(check_item_match_sql, [req.body.item]);
         if (results.length == 0) {
             res.redirect("/menu/no_match");
+        } else {
+            await db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email]);
+            res.redirect("/menu");
         }
-        await db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email]);
-
-        res.redirect("/menu");
 
     } catch (err) {
         res.status(500).send(err.message);
