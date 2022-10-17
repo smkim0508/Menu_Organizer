@@ -809,6 +809,17 @@ const check_num_ordered_sql =`
         email = ?
 `
 
+const check_availability_sql =`
+    SELECT
+        item
+    FROM
+        orders
+    WHERE
+        item = ?
+        AND
+        email = ?
+`
+
 // read if the user has a phone number associated with account
 const read_phone_sql =`
     SELECT
@@ -841,7 +852,6 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         }
         
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
-        // console.log(receipt);
         let [sum, _s] = await db.execute(read_receipt_sum_sql, [req.oidc.user.email]);
         let [phone, _p] = await db.execute(read_phone_sql, [req.oidc.user.email]);
 
@@ -849,36 +859,39 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         let numIncomplete = [];
         let temp1 = [];
         let temp2 = [];
-
-        for (i=0; i<menu.length; i++) {
-            let [incomplete_orders, _i] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
-            if (incomplete_orders[0].sum == null) {
-                numIncomplete[i] = 0;
-            } else {
-                numIncomplete[i] = incomplete_orders[0].sum;
-            } if (numIncomplete[i] >= menu[i].numAvail) {
-                temp1[i] = menu[i].menu_item;
-            }
-        }
+        let temp3 = [];
 
         for (let i=0; i<receipt.length; i++) {
-            let [ordered, _a] = await db.execute(check_num_ordered_sql, [receipt[i].menu_item, req.oidc.user.email]);
+            let [ordered, _o] = await db.execute(check_num_ordered_sql, [receipt[i].menu_item, req.oidc.user.email]);
             let [incomplete_orders, _incomplete] = await db.execute(count_number_incompleted_orders, [receipt[i].menu_item]);
             if (incomplete_orders[0].sum == null) {
                 numIncomplete[i] = 0;
             }
             else {
                 numIncomplete[i] = incomplete_orders[0].sum
-            } if (numIncomplete[i] >= receipt[i].numAvail - ordered[0].sum) {
-                temp2[i] = receipt[i].menu_item;
+            } if (ordered[0].sum > receipt[i].numAvail - numIncomplete[i]) {
+                temp1[i] = receipt[i].menu_item; // saves the current name of order for each overflowed
+                temp2[i] = receipt[i].numAvail - numIncomplete[i]; // saves current number of orders available for each overflowed
             }
         }
 
-        if (temp1.length > 0) {
-            res.redirect("/order_filled");
+        for (i=0; i<menu.length; i++) {
+            let [num, _n] = await db.execute(check_availability_sql, [menu[i].menu_item, req.oidc.user.email]);
+            let [incomplete_orders, _i] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
+            if (incomplete_orders[0].sum == null) {
+                numIncomplete[i] = 0;
+            } else {
+                numIncomplete[i] = incomplete_orders[0].sum;
+            } if (numIncomplete[i] >= menu[i].numAvail && num.length > 0) {
+                temp3[i] = menu[i].menu_item;
+            }
         }
-        else if (temp2.length > 0) {
+
+        if (temp1.length > 0 && temp3.length == 0) {
             res.redirect("/insufficient");
+        }
+        else if (temp3.length > 0) {
+            res.redirect("/order_filled");
         }
         else {
             res.render("checkout", { receipt: receipt, sum: sum[0].sum, email: req.oidc.user.email, phone: phone[0].phone });
@@ -1217,7 +1230,7 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
 //     })
 // })
 
-// // Error page when the selected orders for the week has been completed already
+// Error page when the selected orders for the week has been completed already
 app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
@@ -1235,16 +1248,55 @@ app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
 
         for (let i=0; i<menu.length; i++) {
             let [incomplete_orders, _i] = await db.execute(count_number_incompleted_orders, [menu[i].menu_item]);
+            let [num, _n] = await db.execute(check_availability_sql, [menu[i].menu_item, req.oidc.user.email]);
             if (incomplete_orders[0].sum == null) {
                 numIncomplete[i] = 0;
             } else {
                 numIncomplete[i] = incomplete_orders[0].sum;
-            } if (numIncomplete[i] >= menu[i].numAvail) {
+            } if (numIncomplete[i] >= menu[i].numAvail && num.length > 0) {
                 temp[i] = menu[i].menu_item;
             }
         }
 
         res.render("order_filled", { filled_order: temp });
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+} );
+
+// Error page when the user submits too many orders for the week
+app.get( "/insufficient", requiresAuth(), async ( req, res ) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            await db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
+        }
+        
+        let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
+
+        let numIncomplete = [];
+        let temp1 = [];
+        let temp2 = [];
+
+        for (let i=0; i<receipt.length; i++) {
+            let [ordered, _o] = await db.execute(check_num_ordered_sql, [receipt[i].menu_item, req.oidc.user.email]);
+            let [incomplete_orders, _incomplete] = await db.execute(count_number_incompleted_orders, [receipt[i].menu_item]);
+            if (incomplete_orders[0].sum == null) {
+                numIncomplete[i] = 0;
+            }
+            else {
+                numIncomplete[i] = incomplete_orders[0].sum
+            } if (ordered[0].sum > receipt[i].numAvail - numIncomplete[i]) {
+                temp1[i] = receipt[i].menu_item; 
+                temp2[i] = receipt[i].numAvail - numIncomplete[i]; 
+            }
+        }
+
+        res.render("insufficient", { filled_order: temp1, num_left: temp2 });
 
     } catch (err) {
         res.status(500).send(err.message);
