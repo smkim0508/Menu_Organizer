@@ -215,9 +215,9 @@ const count_number_incompleted_orders = `
         item = ?
 `
 // counts the number of designated orders taken per week
-const read_orderBy_sql = `
+const read_notice_sql = `
     SELECT
-        orderBy
+        orderBy, announcement
     FROM
         settings
 `
@@ -246,8 +246,8 @@ app.get("/menu", requiresAuth(), async (req, res) => {
         }
         let [read_orders, _r] = await db.execute(read_combined_all_sql, [req.oidc.user.email]);
         let [read_sum, _s] = await db.execute(read_sum_sql, [req.oidc.user.email]);
-        let [orderBy, _by] = await db.execute(read_orderBy_sql);
-        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, orderBy: orderBy[0].orderBy, incompleteOrders: numIncomplete })
+        let [read_notice, _by] = await db.execute(read_notice_sql);
+        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: read_notice[0], incompleteOrders: numIncomplete })
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -307,9 +307,9 @@ app.get( "/edit", requiresAuth(), async (req, res) => {
         }
         
         let [menu, _m] = await db.execute(read_edit_menu_sql);
-        let [orderBy, _o] = await db.execute(read_orderBy_sql);
+        let [notice, _o] = await db.execute(read_notice_sql);
 
-        res.render("menu_edit", { menu: menu, orderBy: orderBy[0].orderBy })
+        res.render("menu_edit", { menu: menu, notice: notice[0] })
 
     } catch (err) {
         res.status(500).send(err.message);
@@ -558,11 +558,12 @@ const create_menu_sql = `
 `
 // update the date that current set of orders are due by
 
-const update_orderBy_sql =`
+const update_notice_sql =`
     UPDATE
         settings
     SET
-        orderBy = ?
+        orderBy = ?,
+        announcement =?
 `
 
 app.post("/edit", requiresAuth(), async (req, res) => {
@@ -584,7 +585,7 @@ app.post("/edit", requiresAuth(), async (req, res) => {
 
         if (req.body.orderBy != null) {
             console.log("1");
-            await db.execute(update_orderBy_sql, [req.body.orderBy]);
+            await db.execute(update_notice_sql, [req.body.orderBy, req.body.announcement]);
         } 
         if (req.body.menu != null) {
             console.log("2");

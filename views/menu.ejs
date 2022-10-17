@@ -50,7 +50,8 @@
                             <% }
                         } %> 
                         have been filled already.</p>
-                        <p>Orders will be delivered on <%= orderBy %></p>
+                        <p>Orders will be delivered on <%= notice.orderBy %></p>
+                        <p><%= notice.announcement %></p>
                     </div>
                   </div>
                 </div>
@@ -62,7 +63,8 @@
                   <div class="card green lighten-2">
                     <div class="card-content white-text">
                       <span class="card-title">Notice:</span>
-                      <p>Orders will be delivered on <%= orderBy %></p>
+                      <p>Orders will be delivered on <%= notice.orderBy %></p>
+                      <p><%= notice.announcement %></p>
                     </div>
                   </div>
                 </div>

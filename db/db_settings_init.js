@@ -8,8 +8,8 @@ db.execute(drop_settings_table_sql);
 
 const create_settings_table_sql = `
 CREATE TABLE settings ( 
-    orderBy VARCHAR(25) NOT NULL
-
+    orderBy VARCHAR(25) NOT NULL,
+    announcement VARCHAR(500) NULL
     );
 `
 
