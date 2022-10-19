@@ -214,10 +214,10 @@ const count_number_incompleted_orders = `
         AND
         item = ?
 `
-// counts the number of designated orders taken per week
-const read_notice_sql = `
+// reads the settings from db
+const read_settings_sql = `
     SELECT
-        orderBy, announcement
+        orderBy, announcement, curr_week
     FROM
         settings
 `
@@ -246,9 +246,9 @@ app.get("/menu", requiresAuth(), async (req, res) => {
         }
         let [read_orders, _r] = await db.execute(read_combined_all_sql, [req.oidc.user.email]);
         let [read_sum, _s] = await db.execute(read_sum_sql, [req.oidc.user.email]);
-        let [read_notice, _by] = await db.execute(read_notice_sql);
+        let [notice, _by] = await db.execute(read_settings_sql);
         console.log(numIncomplete);
-        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: read_notice[0], incompleteOrders: numIncomplete })
+        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: notice[0], incompleteOrders: numIncomplete })
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -308,9 +308,9 @@ app.get( "/edit", requiresAuth(), async (req, res) => {
         }
         
         let [menu, _m] = await db.execute(read_edit_menu_sql);
-        let [notice, _o] = await db.execute(read_notice_sql);
+        let [settings, _s] = await db.execute(read_settings_sql);
 
-        res.render("menu_edit", { menu: menu, notice: notice[0] })
+        res.render("menu_edit", { menu: menu, settings: settings[0] })
 
     } catch (err) {
         res.status(500).send(err.message);
@@ -559,12 +559,13 @@ const create_menu_sql = `
 `
 // update the date that current set of orders are due by
 
-const update_notice_sql =`
+const update_settings_sql =`
     UPDATE
         settings
     SET
         orderBy = ?,
-        announcement =?
+        announcement = ?,
+        curr_week = ?
 `
 
 app.post("/edit", requiresAuth(), async (req, res) => {
@@ -586,7 +587,7 @@ app.post("/edit", requiresAuth(), async (req, res) => {
 
         if (req.body.orderBy != null) {
             console.log("1");
-            await db.execute(update_notice_sql, [req.body.orderBy, req.body.announcement]);
+            await db.execute(update_settings_sql, [req.body.orderBy, req.body.announcement, req.body.curr_week]);
         } 
         if (req.body.menu != null) {
             console.log("2");
@@ -784,17 +785,17 @@ const read_num_menu_sql =`
 
 const record_order_history_sql =`
     INSERT INTO 
-        status (username, email, phone, item, quantity, requests, isComplete)
+        status (username, email, phone, item, quantity, requests, isComplete, sort)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 // adjusted sql for when the user gives no special requests
 const record_order_history_sql_null =`
     INSERT INTO 
-        status (username, email, phone, item, quantity, isComplete)
+        status (username, email, phone, item, quantity, isComplete, sort)
     VALUES
-        (?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?)
 `
 
 // check if the item ordered is available
@@ -923,6 +924,14 @@ app.get("/success", requiresAuth(), async (req, res) => {
     }
 })
 
+// read the settings for current week count
+const read_curr_week_sql =`
+    SELECT
+        curr_week
+    FROM
+        settings
+`
+
 // action after submitting form on checkout page
 app.post("/checkout", requiresAuth(), async (req, res) => {
     try {
@@ -935,13 +944,15 @@ app.post("/checkout", requiresAuth(), async (req, res) => {
         }
 
         let [receipt, _r] = await db.execute(read_receipt_sql, [req.oidc.user.email]);
+        let [curr_week, _c] = await db.execute(read_curr_week_sql);
+        // console.log(curr_week[0].curr_week);
+        
         for (let i=0; i<receipt.length; i++) {
-            console.log(i);
             if (receipt[i].requests == null) {
-                await db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, "0"]);
+                await db.execute(record_order_history_sql_null, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, "0", curr_week[0].curr_week]);
             }
             else {
-                await db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, receipt[i].requests, "0"]);
+                await db.execute(record_order_history_sql, [req.oidc.user.name, req.oidc.user.email, req.body.phone, receipt[i].menu_item, receipt[i].quantity, receipt[i].requests, "0", curr_week[0].curr_week]);
             }
         }
 
@@ -960,7 +971,7 @@ const read_history_user_sql =`
     SELECT
         username, 
         left(date, length(date) - char('G', reverse(date) + 'G')) as date,
-        item, quantity, requests, isComplete
+        item, quantity, requests, isComplete, sort
     FROM
         status
     WHERE
@@ -1007,7 +1018,7 @@ app.get("/history_user", requiresAuth(), async (req, res) => {
 const read_history_admin_sql =`
     SELECT
         left(status.date, length(date) - char('G', reverse(date) + 'G')) as date,
-        status.history_id, users.username, status.item, status.quantity, status.requests, status.isComplete, users.user_id
+        status.history_id, users.username, status.item, status.quantity, status.requests, status.isComplete, status.sort, users.user_id
     FROM
         status
     INNER JOIN
@@ -1049,17 +1060,46 @@ app.get("/history_admin/:user", requiresAuth(), async (req, res) => {
     }
 })
 
-// rendering the complete order history for all users
+// reading the currently selected sorting value
 
+const sort_setting_history_sql =`
+    SELECT
+        week
+    FROM
+        settings
+`
+
+// rendering the complete order history for all users
 const read_history_admin_complete_sql =`
     SELECT
         history_id, 
         left(date, length(date) - char('G', reverse(date) + 'G')) as date, 
-        username, email, phone, item, quantity, requests, isComplete
+        username, email, phone, item, quantity, requests, isComplete, sort
     FROM
         status
 `
 
+// rendering only the partial order history that matches sort
+const read_history_admin_sorted_sql =`
+    SELECT
+        history_id, 
+        left(date, length(date) - char('G', reverse(date) + 'G')) as date, 
+        username, email, phone, item, quantity, requests, isComplete, sort
+    FROM
+        status
+    INNER JOIN
+        settings ON settings.week = status.sort
+`
+
+// read all of the available 'sort' values present in 'status'
+const read_sort_sql =`
+    SELECT DISTINCT
+        sort
+    FROM
+        status
+    ORDER BY
+        sort
+`
 app.get("/history_admin_complete", requiresAuth(), async (req, res) => { 
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
@@ -1074,18 +1114,32 @@ app.get("/history_admin_complete", requiresAuth(), async (req, res) => {
             res.redirect("/access_denied")
         }
 
-        let [history_all, _a] = await db.execute(read_history_admin_complete_sql);
+        let [sort_val, _s] = await db.execute(sort_setting_history_sql);
+        let [sort_avail, _sa] = await db.execute(read_sort_sql);
 
-        if (history_all.length == 0) {
-            res.render("no_order_history_complete");
+        let [history_all, _a] = await db.execute(read_history_admin_complete_sql);
+        let [history_sorted, _h] = await db.execute(read_history_admin_sorted_sql);
+
+        if (sort_val[0].week == 0) {
+            if (history_all.length == 0) {
+                res.render("no_order_history_complete");
+            } else {
+                res.render("order_history_complete", { history: history_all, sort: sort_avail, sort_val: sort_val[0].week });
+            }
         } else {
-            res.render("order_history_complete", { history: history_all });
-        }
+            if (history_all.length == 0) {
+                res.render("no_order_history_complete"); 
+            } else {
+                res.render("order_history_complete", { history: history_sorted, sort: sort_avail, sort_val: sort_val[0].week }); 
+            }
+        } 
 
     } catch (err) {
         res.status(500).send(err.message);
     }
 })
+
+// update settings based on
 
 // adjust the completion status of orders in order history
 
@@ -1195,6 +1249,38 @@ app.get("/history_admin/:user_id/:history_id/order_not_completed", requiresAuth(
         await db.execute(not_completed_orders, [req.params.history_id]);
 
         res.redirect("/history_admin/" + req.params.user_id);
+
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+})
+
+// Updating the currently selected sort value
+const select_sort_sql =`
+    UPDATE
+        settings
+    SET
+        week = ?
+`
+
+// Update the sort value selected and re-render the complete admin history page
+app.get("/history_admin_complete/:id", requiresAuth(), async (req, res) => {
+    try {
+        let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
+        if (users.length == 0) {
+            await db.execute(add_user_sql, [req.oidc.user.name, req.oidc.user.email]);
+            console.log(`Added user to db with email ${req.oidc.user.email}`);
+        } else {
+            console.log("User exists in db")
+        }
+        let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
+        if (isAdmin[0].isAdmin == 0) {
+            res.redirect("/access_denied")
+        }
+
+        await db.execute(select_sort_sql, [req.params.id]);
+
+        res.redirect("/history_admin_complete");
 
     } catch (err) {
         res.status(500).send(err.message);

@@ -21,6 +21,7 @@
         <table>
         <thead>
             <tr>
+                <th>Week</th>
                 <th>Date</th>
                 <th>Item</th>
                 <th>Quantity</th>
@@ -31,6 +32,7 @@
         <tbody>
             <% for(let i = 0; i < history.length; i++) { %>
             <tr>
+                <td><%= history[i].sort %></td>
                 <td><%= history[i].date %></td>
                 <td><%= history[i].item %></td>
                 <td><%= history[i].quantity %></td>

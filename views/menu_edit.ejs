@@ -13,20 +13,25 @@
 <div class="white-text">
 <div class="container">
     <div class="section" id="orderDate">
-        <h2>Notice:</h2>
+        <h2>Settings:</h2>
         <form name="orderBy" method="post" id="orderBy">
             <p>Order by:</p>
             <div class="input-field col s4">
                 <label for="orderBy"><div class="input-color"></div></label>
-                <input type="text" name="orderBy" class="validate" value="<%= notice.orderBy %>" data-length="25" color="white" required>
+                <input type="text" name="orderBy" class="validate" value="<%= settings.orderBy %>" data-length="25" color="white" required>
             </div>
             <p>Announcement:</p>
             <div class="input-field col s4">
                 <label for="announcement"><div class="input-color"></div></label>
-                <input type="text" name="announcement" class="validate" value="<%= notice.announcement %>" data-length="500" color="white" required>
+                <input type="text" name="announcement" class="validate" value="<%= settings.announcement %>" data-length="500" color="white" required>
+            </div>
+            <p>Week:</p>
+            <div class="input-field col s4">
+                <label for="curr_week"><div class="input-color"></div></label>
+                <input type="number" name="curr_week" class="validate" value="<%= settings.curr_week %>" color="white" required>
             </div>
             <button class="btn waves-effect waves-light green" type="submit">
-                <i class="material-icons right">send</i>Change Header</button>
+                <i class="material-icons right">send</i>Update Settings</button>
         </form>
 
     </div>

@@ -10,7 +10,8 @@ const create_settings_table_sql = `
 CREATE TABLE settings ( 
     orderBy VARCHAR(25) NOT NULL,
     announcement VARCHAR(500) NULL,
-    week INT NOT NULL
+    week INT NOT NULL,
+    curr_week INT NOT NULL
     );
 `
 
@@ -18,12 +19,12 @@ db.execute(create_settings_table_sql);
 
 const insert_settings_table_sql = `
     INSERT INTO
-        settings (orderBy)
+        settings (orderBy, week, curr_week)
     VALUES 
-        (?);
+        (?, ?, ?);
 `
 
-db.execute(insert_settings_table_sql, ["Date ??/??"]);
+db.execute(insert_settings_table_sql, ["Date ??/??", "0", "0"]);
 
 const read_settings_table_sql = `SELECT * FROM settings`;
 

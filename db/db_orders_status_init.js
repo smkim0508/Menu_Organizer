@@ -17,7 +17,8 @@ CREATE TABLE status (
     quantity INT NOT NULL,
     requests VARCHAR(250) NULL,
     isComplete INT NOT NULL,
-    PRIMARY KEY (history_id) 
+    sort INT NOT NULL
+    PRIMARY KEY (history_id)
     );
 `
 
@@ -25,13 +26,13 @@ db.execute(create_orders_status_table_sql);
 
 const insert_orders_status_table_sql = `
     INSERT INTO
-        status (username, email, item, quantity, isComplete)
+        status (username, email, item, quantity, isComplete, sort)
     VALUES 
-        (?, ?, ?, ?, ?);
+        (?, ?, ?, ?, ?, ?);
 `
 //sample items in the database
-db.execute(insert_orders_status_table_sql, ["user1", "chefminkim58@gmail.com", "cookies", "3", "1"]);
-db.execute(insert_orders_status_table_sql, ["user2", "sample2@email.com", " bread", "5", "1"]);
+db.execute(insert_orders_status_table_sql, ["user1", "chefminkim58@gmail.com", "cookies", "3", "1", "0"]);
+db.execute(insert_orders_status_table_sql, ["user2", "sample2@email.com", " bread", "5", "1", "0"]);
 
 const read_orders_status_table_sql = "SELECT * FROM status";
 
