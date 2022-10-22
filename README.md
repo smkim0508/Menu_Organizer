@@ -1,4 +1,4 @@
-# Menu_Organizer
+# Menu Organizer // Min Meals Ordering App
 This is the Menu Organizer that I began building as a capstone project for the Web App Development course. Since then, I have expanded upon various functionalities to manage and allow users to place orders for my lunch business, Min Meals! Currently, students can log and order their desired menu item using this web app online via the heroku service: https://min-munches-lunch-order-app.herokuapp.com/
 
 Orders for Min Meals are taken weekly each week, unless otherwise announced. Please message me via my email or instagram (@minmunches_) for any questions regarding placing orders!
