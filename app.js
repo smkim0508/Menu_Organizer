@@ -338,8 +338,8 @@ app.get("/admin", requiresAuth(), async (req, res) => {
         }
         let [isAdmin, _i] = await db.execute(check_admin_permission_sql, [req.oidc.user.email]);
         if (isAdmin[0].isAdmin == 0) {
-            // res.redirect("/menu")
-            res.status(301).redirect(`www.minmeals.com/menu`);
+            res.redirect("/menu")
+            // res.status(301).redirect(`www.minmeals.com/menu`);
         }
 
         // let [admin, _a] = await db.execute(read_admin_sql, [req.oidc.user.email]);
