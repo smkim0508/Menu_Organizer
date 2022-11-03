@@ -433,7 +433,7 @@ app.get("/admin_edit/:id/delete", requiresAuth(), async (req, res) => {
             res.redirect("/access_denied")
         }
         
-        await db,execute(delete_user_sql, [req.params.id]);
+        await db.execute(delete_user_sql, [req.params.id]);
 
         res.redirect("/admin_edit");
 
