@@ -1,5 +1,5 @@
 //set up the server
-const express = require( "express" );
+const express = require("express");
 const logger = require ("morgan");
 const app = express();
 
@@ -15,7 +15,7 @@ app.set("view engine", "ejs");
 let db;
 try {
     (async () => {
-        db = await require('./db/db_pool');
+        db = await require("./db/db_pool");
     })()
 } catch (err) {
     console.log(`Error while establishing connection, ${err}`);
@@ -43,7 +43,7 @@ app.use( express.urlencoded({extended : false}));
 app.use(logger("dev"));
 
 // define middleware that serves static resources in the public directory
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + "/public"));
 
 // admin permission check
 const check_admin_permission_sql =`
@@ -56,20 +56,20 @@ const check_admin_permission_sql =`
 `
 
 // req.isAuthenticated is provided from the auth router
-app.get('/testLogin', (req, res) => {
+app.get("/testLogin", (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
   });
 
 const { requiresAuth } = require('express-openid-connect');
 const { format } = require("mysql2");
 
-app.get('/profile', requiresAuth(), (req, res) => {
+app.get("/profile", requiresAuth(), (req, res) => {
     res.send(JSON.stringify(req.oidc.user));
 });
 
 // define a route for the default home page
-app.get( "/", ( req, res ) => {
-    res.render('index');
+app.get("/", ( req, res ) => {
+    res.render("index");
 } );
 
 
@@ -79,7 +79,7 @@ app.get( "/", ( req, res ) => {
 // middleware -> if authenticated, check if admin or not. Take result, attach later
 
 // prevent and redirect users from attempting to order an item not available on the menu
-app.get( "/menu/no_match", requiresAuth(), async ( req, res ) => {
+app.get("/menu/no_match", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -97,7 +97,7 @@ app.get( "/menu/no_match", requiresAuth(), async ( req, res ) => {
 } );
 
 // prevent and redirect users from attempting to view or edit an order that does not exist
-app.get( "/menu/no_id_found", requiresAuth(), async ( req, res ) => {
+app.get("/menu/no_id_found", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -115,7 +115,7 @@ app.get( "/menu/no_id_found", requiresAuth(), async ( req, res ) => {
 } );
 
 // prevent and redirect admins from attempting to view or edit a menu item that does not exist
-app.get( "/edit/no_id_found", requiresAuth(), async ( req, res ) => {
+app.get("/edit/no_id_found", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -137,7 +137,7 @@ app.get( "/edit/no_id_found", requiresAuth(), async ( req, res ) => {
 } );
 
 // prevent and redirect users from attempting to access pages that require admin permissions
-app.get( "/access_denied", requiresAuth(), async ( req, res ) => {
+app.get("/access_denied", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -248,7 +248,7 @@ app.get("/menu", requiresAuth(), async (req, res) => {
         let [read_sum, _s] = await db.execute(read_sum_sql, [req.oidc.user.email]);
         let [notice, _by] = await db.execute(read_settings_sql);
         console.log(numIncomplete);
-        res.render('menu', { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: notice[0], incompleteOrders: numIncomplete })
+        res.render("menu", { orders: read_orders, menu: menu, username: req.oidc.user.name, sum: read_sum[0].sum, notice: notice[0], incompleteOrders: numIncomplete })
     } catch (err) {
         res.status(500).send(err.message);
     }
@@ -293,7 +293,7 @@ const read_edit_menu_sql = `
         menu
 `
 
-app.get( "/edit", requiresAuth(), async (req, res) => {
+app.get("/edit", requiresAuth(), async (req, res) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -327,7 +327,7 @@ const read_admin_sql = `
         email = ?
 `
 
-app.get( "/admin", requiresAuth(), async (req, res) => {
+app.get("/admin", requiresAuth(), async (req, res) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -617,7 +617,7 @@ const read_combined_item_sql =`
 // possibly to sum above
 
 // define a route for the item detail page
-app.get( "/menu/item/:id", requiresAuth(), async (req, res ) => {
+app.get("/menu/item/:id", requiresAuth(), async (req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -649,7 +649,7 @@ const read_edit_item_sql = `
         menu_id = ?
 `
 
-app.get( "/edit/item/:id", requiresAuth(), async (req, res ) => {
+app.get("/edit/item/:id", requiresAuth(), async (req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -1317,7 +1317,7 @@ app.get("/history_admin_complete/:id", requiresAuth(), async (req, res) => {
 // })
 
 // Error page when the selected orders for the week has been completed already
-app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
+app.get("/order_filled", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
@@ -1352,7 +1352,7 @@ app.get( "/order_filled", requiresAuth(), async ( req, res ) => {
 } );
 
 // Error page when the user submits too many orders for the week
-app.get( "/insufficient", requiresAuth(), async ( req, res ) => {
+app.get("/insufficient", requiresAuth(), async ( req, res ) => {
     try {
         let [users, _u] = await db.execute(check_user_match_sql, [req.oidc.user.email]);
         if (users.length == 0) {
