@@ -21,7 +21,7 @@ try {
     console.log(`Error while establishing connection, ${err}`);
 }
 
-//auth 0 stuff
+//auth 0 stuff!
 const { auth } = require('express-openid-connect');
 
 const config = {
