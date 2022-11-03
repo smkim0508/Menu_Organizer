@@ -15,7 +15,7 @@ app.set("view engine", "ejs");
 let db;
 try {
     (async () => {
-        db = await require("./db/db_pool");
+        db = await require('./db/db_pool');
     })()
 } catch (err) {
     console.log(`Error while establishing connection, ${err}`);
@@ -43,7 +43,7 @@ app.use( express.urlencoded({extended : false}));
 app.use(logger("dev"));
 
 // define middleware that serves static resources in the public directory
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + '/public'));
 
 // admin permission check
 const check_admin_permission_sql =`
