@@ -15,3 +15,4 @@ const dbConfig = {
 const connectionPool = mysql.createConnection(dbConfig);
 
 module.exports = connectionPool;
+
