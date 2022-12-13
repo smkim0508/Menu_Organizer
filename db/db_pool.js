@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const dbConfig = {
+    // connectionLimit set to 100 by default
     host: process.env.DB_HOST || "localhost",
     port: parseInt( process.env.DB_PORT || "3306" ),
     user: process.env.DB_USER,
