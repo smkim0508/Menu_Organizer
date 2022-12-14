@@ -539,9 +539,15 @@ app.post("/menu", requiresAuth(), async (req, res) => {
         }
 
         let [results, _r] = await db.execute(check_item_match_sql, [req.body.item]);
-        if (results.length == 0) {
+
+        // make sure users don't place an order request with 0-quantity items
+        if (req.body.quantity == 0) {
+            res.render("order_empty");
+        }
+        else if (results.length == 0) {
             res.redirect("/menu/no_match");
-        } else {
+        } 
+        else {
             await db.execute(create_item_sql, [req.body.item, req.body.quantity, req.body.requests, req.oidc.user.email]);
             res.redirect("/menu");
         }
@@ -896,7 +902,7 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         if (void_check == 0) {
             res.render("cart_empty");
         }
-        if (temp1.length > 0 && temp3.length == 0) {
+        else if (temp1.length > 0 && temp3.length == 0) {
             res.redirect("/insufficient");
         }
         else if (temp3.length > 0) {
