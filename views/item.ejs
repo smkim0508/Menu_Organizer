@@ -11,100 +11,87 @@
 </head>
 <body class="teal lighten-2">
     <div class="container">
-    <div class="white-text">
-        <div class="section" id="details">
-            <div class="row">
-            <h2> Menu Details: </h2>
-            </div>
-            <div class="row">
-                <div class="item-image">
-                <img src="/images/<%= menu_item.toLowerCase() %>.jpg" width="331" height="400" alt="<%= menu_item %>">
+        <div class="white-text">
+            <div class="section" id="details">
+                <div class="row">
+                    <h2> Menu Details: </h2>
                 </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        
-                        <td><b>Item</b></td>
-                        <td><b>Price (per item)</b></td>
-                        <td><b>Calories (per item)</b></td>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <!-- <td>Hamburger</td> -->
-                        <td><%= item %></td>
-                        <td>$<%= price %></td>
-                        <td><%= calories %> kcal</td>
-                        
-                    </tr>
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        <td valign="top"><div class = "description"><b>Description</b></div></td>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <td><%= description %></td>
-                </tbody>
-            </table>
-        </div>
-        <div container>
-        <div class = "col s4"><p><b>Quantity:</b></p></div>
-        <div class = "col s4"><p><%= quantity %></p></div>
-        <div class = "col s8"><p><b>Special Requests:</b></p></div>
-        <div class = "col s8"><p><%= requests %></p></div>
-        </div>
-        <div class="section" id="orderEdit">
-            <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
-                <i class="material-icons right">edit</i>Edit
-            </a>
-            <a class="btn-large waves-effect waves-light red middle" href="/menu/item/<%= order_id %>/delete">
-                <i class="material-icons right">delete</i>Delete Order
-            </a>
-            <a class="btn-large waves-effect waves-light blue right" href="/menu"> 
-                <i class="material-icons right">keyboard_backspace</i>Return
-            </a>
-        </div>
-
-        <div class="modal" id="itemEdit">
-
-            <div class="modal-content">
-                <div class="black-text">
-                <h4>Edit Order:</h4>
+                <div class="row">
+                    <div class="item-image">
+                        <img src="/images/<%= menu_item.toLowerCase() %>.jpg" width="331" height="400" alt="<%= menu_item %>">
+                    </div>
                 </div>
-                  <!-- form here -->
-                <form method="post" action="/menu/item/<%= order_id %>"> 
-                    <div class="row">
-                    
-                        <div class="input-field col s6">
-                            <label for="quantity">Item Quantity:</label>
-                            <input type="number" name="quantity" value="<%= quantity %>" required>
-                        </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <td><b>Item</b></td>
+                            <td><b>Price (per item)</b></td>
+                            <td><b>Calories (per item)</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><%= item %></td>
+                            <td>$<%= price %></td>
+                            <td><%= calories %> kcal</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <td valign="top"><div class = "description"><b>Description</b></div></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <td><%= description %></td>
+                    </tbody>
+                </table>
+            </div>
+            <div class = "container">
+                <div class = "col s4"><p><b>Quantity:</b></p></div>
+                <div class = "col s4"><p><%= quantity %></p></div>
+                <div class = "col s8"><p><b>Special Requests:</b></p></div>
+                <div class = "col s8"><p><%= requests %></p></div>
+            </div>
+            <div class="section" id="orderEdit">
+                <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
+                    <i class="material-icons right">edit</i>Edit
+                </a>
+                <a class="btn-large waves-effect waves-light red middle" href="/menu/item/<%= order_id %>/delete">
+                    <i class="material-icons right">delete</i>Delete Order
+                </a>
+                <a class="btn-large waves-effect waves-light blue right" href="/menu"> 
+                    <i class="material-icons right">keyboard_backspace</i>Return
+                </a>
+            </div>
+            <div class="modal" id="itemEdit">
+                <div class="modal-content">
+                    <div class="black-text">
+                        <h4>Edit Order:</h4>
                     </div>
-                    <div class="row">
-                        <div class="input-field col s10">
-                            <label for="request">Special Requests:</label>
-                            <input type="text" name="request" value="<%= requests %>" data-length="250">
+                    <!-- form here -->
+                    <form method="post" action="/menu/item/<%= order_id %>"> 
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <label for="quantity">Item Quantity:</label>
+                                <input type="number" name="quantity" value="<%= quantity %>" required>
+                            </div>
                         </div>
-                    </div>
-                   
-                    <!-- <div class="modal-footer"></div> -->
-                        <button class="btn waves-effect waves-light " type="submit"><i
-                                class="material-icons right">send</i>Change</button>
-
+                        <div class="row">
+                            <div class="input-field col s10">
+                                <label for="request">Special Requests:</label>
+                                <input type="text" name="request" value="<%= requests %>" data-length="250">
+                            </div>
+                        </div>
+                        <button class="btn waves-effect waves-light " type="submit"><i class="material-icons right">send</i>Change</button>
                         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Exit</a>
-                    <!-- </div> -->
-                </form>
+                    </form>
+                </div>
             </div>
-
-        </div>
         </div>
     </div>
+    
     <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 

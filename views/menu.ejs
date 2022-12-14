@@ -10,175 +10,169 @@
     <link rel="stylesheet" href="/styles/menu.css">
 </head>
 <body class="teal lighten-2">
-<div class="white-text">
-<div class="container">
-        <div class="fixed-action-btn" style="bottom: 180px; right: 24px;">
+    <div class="white-text">
+        <div class="container">
+            <div class="fixed-action-btn" style="bottom: 180px; right: 24px;">
                 <a href="/checkout" class="btn-floating btn-large red">
                     <i class="large material-icons">shopping_cart</i>
                 </a>
-        </div>
-        <div class="fixed-action-btn" style="bottom: 100px; right: 24px;">
-            <a href="/history_user" class="btn-floating btn-large red">
-              <i class="large material-icons">history</i>
-            </a>
-        </div>
-        <div class="fixed-action-btn">
-            <a href="/logout" class="btn-floating btn-large red">
-              <i class="large material-icons">exit_to_app</i>
-            </a>
-        </div>
-    <div class="section" id="DailyMenu">
-        <!-- announcement bar -->
-        <% let temp = [];
-            for (let i=0; i<menu.length; i++) {
-                if (incompleteOrders[i] >= menu[i].numAvail) { 
-                    temp[i] = menu[i].menu_item
-                } 
-            } 
-
-        if (temp.length > 0) { %>
-        
-                <div class="col s12 m8">
-                  <div class="card red lighten-2">
-                    <div class="card-content white-text">
-                      <span class="card-title">Notice:</span>
-                      <p>The available orders for 
-                        <% for (let j = 0; j < temp.length; j++) { %>
-                            <%= temp[j] %>
-                            <% if (j+1 != temp.length && temp[j] != null) { %>
-                                and
-                            <% }
-                        } %> 
-                        have been filled already.</p>
+            </div>
+            <div class="fixed-action-btn" style="bottom: 100px; right: 24px;">
+                <a href="/history_user" class="btn-floating btn-large red">
+                    <i class="large material-icons">history</i>
+                </a>
+            </div>
+            <div class="fixed-action-btn">
+                <a href="/logout" class="btn-floating btn-large red">
+                    <i class="large material-icons">exit_to_app</i>
+                </a>
+            </div>
+            <div class="section" id="DailyMenu">
+                <!-- announcement bar -->
+                <% let temp = [];
+                    for (let i=0; i<menu.length; i++) {
+                        if (incompleteOrders[i] >= menu[i].numAvail) { 
+                            temp[i] = menu[i].menu_item
+                        } 
+                    } 
+                if (temp.length > 0) { %>
+                    <div class="col s12 m8">
+                    <div class="card red lighten-2">
+                        <div class="card-content white-text">
+                        <span class="card-title">Notice:</span>
+                        <p>The available orders for 
+                            <% for (let j = 0; j < temp.length; j++) { %>
+                                <%= temp[j] %>
+                                <% if (j+1 != temp.length && temp[j] != null) { %>
+                                    and
+                                <% }
+                            } %> 
+                            have been filled already.</p>
+                            <p>Orders will be delivered on <%= notice.orderBy %></p>
+                            <p><%= notice.announcement %></p>
+                        </div>
+                    </div>
+                    </div>
+                <% }
+                else { %>
+                    <div class="col s12 m8">
+                    <div class="card green lighten-2">
+                        <div class="card-content white-text">
+                        <span class="card-title">Notice:</span>
                         <p>Orders will be delivered on <%= notice.orderBy %></p>
                         <p><%= notice.announcement %></p>
+                        </div>
                     </div>
-                  </div>
-                </div>
-         
-        <% }
-        else { %>
-        
-                <div class="col s12 m8">
-                  <div class="card green lighten-2">
-                    <div class="card-content white-text">
-                      <span class="card-title">Notice:</span>
-                      <p>Orders will be delivered on <%= notice.orderBy %></p>
-                      <p><%= notice.announcement %></p>
                     </div>
-                  </div>
-                </div>
-      
-        <% } %>
-
-        
-        <h2>Today's Menu:</h2>
-    <table>
-        <div class = "center">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Price (per item)</th>
-                    <th>Calories</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i = 0; i < menu.length; i++) { %>
-                <tr>
-                    <td><%= menu[i].menu_item %></td>
-                    <td>$<%= menu[i].price %></td>
-                    <td><%= menu[i].calories %></td>
-                    <td><%= menu[i].description %></td>
-                    <td><img src="/images/<%= menu[i].menu_item.toLowerCase() %>.jpg" width="124" height="150" alt="<%= menu[i].menu_item %>"></td>
-                </tr>
-    
-                <% } %>
-    
-            </tbody>
-        </div>
-    </table>
-    </div>
-    <div class="section" id="MenuList">
-        <h2>Current Cart for <%= username %>:</h2>
-    <table>
-        <div class = "center">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Sum</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < orders.length; i++) { %>
-            <tr>
-                <td><%= orders[i].menu_item %></td>
-                <td><%= orders[i].quantity %></td>
-                <td>$<%= orders[i].price*orders[i].quantity %></td>
-                <td>
-                    <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=orders[i].order_id %>"><i
-                            class="material-icons right">edit</i>Details</a>
-                    <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=orders[i].order_id %>/delete"><i
-                            class="material-icons right">delete</i>Delete</a>
-                </td>
-            </tr>
-            
-            <% } %>
-            <!-- Sum function above -->
-        </tbody>
-        </div>
-    </table>
-    <div class = "buffer">
-    <h6><b>Total:</b> $
-        <% if (sum <= 0) { %>
-        0
-        <% } 
-        else { %>
-        <%= sum %>
-        <% } %>
-    </h6>
-    </div> 
-    </div>
-    <div class="section" id="AddMenu">
-        <h2>Place New Order:</h2>
-
-        <form class="col s12" method="post" id="menu">
-            <div class="row">
-                <div class="input-field col s6">
-                    <label for="opt"><div class="input-color">Choose an Item</div></label>
-                
-                    <input type="text" id="opt" name="item" list="options" data-length="100" required>
-                        <datalist id="options">
-                            <% for (let k = 0; k < menu.length; k++) { %>
-                                <option value="<%= menu[k].menu_item %>"></option>
+                <% } %> 
+                <h2>Today's Menu:</h2>
+                <table>
+                    <div class = "center">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price (per item)</th>
+                                <th>Calories</th>
+                                <th>Description</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(let i = 0; i < menu.length; i++) { %>
+                            <tr>
+                                <td><%= menu[i].menu_item %></td>
+                                <td>$<%= menu[i].price %></td>
+                                <td><%= menu[i].calories %></td>
+                                <td><%= menu[i].description %></td>
+                                <td><img src="/images/<%= menu[i].menu_item.toLowerCase() %>.jpg" width="124" height="150" alt="<%= menu[i].menu_item %>"></td>
+                            </tr>
                             <% } %>
-                        </datalist>
-                        
-                </div>
-                <div class="input-field col s6">
-                    <label for="quantity"><div class="input-color">Quantity</div></label>
-                    <input type="number" name="quantity" class="validate" value="1" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <label for="requests"><div class="input-color">Special Requests</div></label>
-                    <input type="text" name="requests" class="validate" data-length="250" color="white">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col s6">
-                    <div class="request-color">
-                    (Request to remove any ingredients or specify any dietary restrictions)
+                        </tbody>
                     </div>
-                </div>
+                </table>
             </div>
-            <button class="btn waves-effect waves-light" type="submit">
-                <i class="material-icons right">send</i>Add Item to Cart</button>
-        </form>
+            <div class="section" id="MenuList">
+                <h2>Current Cart for <%= username %>:</h2>
+                <table>
+                    <div class = "center">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Sum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(let i = 0; i < orders.length; i++) { %>
+                            <tr>
+                                <td><%= orders[i].menu_item %></td>
+                                <td><%= orders[i].quantity %></td>
+                                <td>$<%= orders[i].price*orders[i].quantity %></td>
+                                <td>
+                                    <a class="btn-small waves-effect waves-light orange" href="/menu/item/<%=orders[i].order_id %>">
+                                        <i class="material-icons right">edit</i>Details
+                                    </a>
+                                    <a class="btn-small waves-effect waves-light red" href="/menu/item/<%=orders[i].order_id %>/delete">
+                                        <i class="material-icons right">delete</i>Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </div>
+                </table>
+                <div class = "buffer">
+                    <h6>
+                        <b>Total: $</b>
+                        <% if (sum <= 0) { %>
+                        0
+                        <% } 
+                        else { %>
+                        <%= sum %>
+                        <% } %>
+                    </h6>
+                </div> 
+            </div>
+            <div class="section" id="AddMenu">
+                <h2>Place New Order:</h2>
+                <form class="col s12" method="post" id="menu">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <label for="opt"><div class="input-color">Choose an Item</div></label>
+                            <input type="text" id="opt" name="item" list="options" data-length="100" required>
+                                <datalist id="options">
+                                    <% for (let k = 0; k < menu.length; k++) { %>
+                                        <option value="<%= menu[k].menu_item %>"></option>
+                                    <% } %>
+                                </datalist>  
+                        </div>
+                        <div class="input-field col s6">
+                            <label for="quantity"><div class="input-color">Quantity</div></label>
+                            <input type="number" name="quantity" class="validate" value="1" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="requests"><div class="input-color">Special Requests</div></label>
+                            <input type="text" name="requests" class="validate" data-length="250" color="white">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6">
+                            <div class="request-color">
+                            (Request to remove any ingredients or specify any dietary restrictions)
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn waves-effect waves-light" type="submit">
+                        <i class="material-icons right">send</i>Add Item to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script> M.AutoInit();</script>
 </div>

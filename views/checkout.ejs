@@ -10,90 +10,86 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body class = "teal lighten-2">
-    <div class ="container">
-    <div class="center">
-        <div class="small_buffer"></div>
-        <div class="statement">
-        <p>Your order receipt is shown below.</p>
-        <div class="small_buffer"></div>
-        <p>Please review your order and make any changes before your final submission.</p>
+    <div class = "container">
+        <div class= "center">
+            <div class="small_buffer"></div>
+            <div class="statement">
+                <p>Your order receipt is shown below.</p>
+                <p>Please review your order and make any changes before your final submission.</p>
+            </div>
+            <div class="table_font">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Sum</th>
+                            <th>Special Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < receipt.length; i++) { %>
+                        <tr>
+                            <td><%= receipt[i].menu_item %></td>
+                            <td><%= receipt[i].quantity %></td>
+                            <td>$<%= receipt[i].price*receipt[i].quantity %></td>
+                            <td><%= receipt[i].requests %></td>
+                        </tr>
+
+                        <% } %>
+                    </tbody>
+                </table>
+                <h6>Total: $<%= sum %> </h6>
+            </div>
+            <div class="statement">
+                <div class="small_buffer"></div>
+                <p>Contact information</p>
+            </div>
+            <form class="col s12" method="post" id="contacts">
+                <div class="table_font">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="col s3" text-align="left">
+                                        <p>Phone Number:</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-field col s9">
+                                        <label for="phone"><div class="input-color"></div></label>
+                                        <input type="text" name="phone" class="validate" value="<%= phone %>" data-length="20" color="white" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="col s3" text-align="left">
+                                        <p>Email:</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="col s9">
+                                        <p><%= email %></p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="small_buffer"></div>
+                    <table>
+                        <td>
+                            <a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>Edit Order</a>
+                            <button class="btn-large waves-effect waves-light btn-large green" type="submit">
+                            <i class="material-icons right">arrow_forward</i>Complete Order</button>
+                        </td>
+                    </table>
+                </div>
+            </form>
         </div>
-        <div class="table_font">
-        <table>
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Sum</th>
-                <th>Special Requests</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < receipt.length; i++) { %>
-            <tr>
-                <td><%= receipt[i].menu_item %></td>
-                <td><%= receipt[i].quantity %></td>
-                <td>$<%= receipt[i].price*receipt[i].quantity %></td>
-                <td><%= receipt[i].requests %></td>
-            </tr>
-
-            <% } %>
-        </tbody>
-        </table>
-        <h6>Total: $<%= sum %> </h6>
-        </div>
-
-        <div class="statement">
-        <div class="small_buffer">
-        <p>Contact information</p>
-        </div>
-        </div>
-
-        <form class="col s12" method="post" id="contacts">
-        <div class="table_font">
-        <table>
-            <tbody>
-            <tr>
-                <td>
-                    <div class="col s3" text-align="left">
-                        <p>Phone Number:</p>
-                    </div>
-                </td>
-                <td>
-                    <div class="input-field col s9">
-                        <label for="phone"><div class="input-color"></div></label>
-                        <input type="text" name="phone" class="validate" value="<%= phone %>" data-length="20" color="white" required>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="col s3" text-align="left">
-                        <p>Email:</p>
-                    </div>
-                </td>
-                <td>
-                    <div class="col s9">
-                        <p><%= email %></p>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <div class="small_buffer"></div>
-
-         <table>
-            <td>
-                <a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>Edit Order</a>
-                <button class="btn-large waves-effect waves-light btn-large green" type="submit">
-                <i class="material-icons right">arrow_forward</i>Complete Order</button>
-            </td>
-        </table>
-        </form>
-
     </div>
-    </div>
+
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

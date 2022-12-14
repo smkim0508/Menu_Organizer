@@ -11,40 +11,41 @@
 </head>
 <body class = "teal lighten-2">
     <div class="container">
-    <div class ="center">
-        <div class="small_buffer"></div>
-        <div class="statement">
-        <h4>Thank you! Your order has been successfully completed. </h4>
-        <div class="small_buffer"></div>
-        <p>Please contact me if you have any questions or if you'd like to make any changes to your order!</p>
-        </div>
-        <div class="table_font">
-        <table>
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Sum</th>
-                <th>Special Requests</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < receipt.length; i++) { %>
-            <tr>
-                <td><%= receipt[i].menu_item %></td>
-                <td><%= receipt[i].quantity %></td>
-                <td>$<%= receipt[i].price*receipt[i].quantity %></td>
-                <td><%= receipt[i].requests %></td>
-            </tr>
+        <div class ="center">
+            <div class="small_buffer"></div>
+            <div class="statement">
+                <h4>Thank you! Your order has been successfully completed.</h4>
+                <div class="small_buffer"></div>
+                <p>Please contact me if you have any questions or if you'd like to make any changes to your order!</p>
+            </div>
+            <div class="table_font">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Sum</th>
+                            <th>Special Requests</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < receipt.length; i++) { %>
+                        <tr>
+                            <td><%= receipt[i].menu_item %></td>
+                            <td><%= receipt[i].quantity %></td>
+                            <td>$<%= receipt[i].price*receipt[i].quantity %></td>
+                            <td><%= receipt[i].requests %></td>
+                        </tr>
 
-            <% } %>
-        </tbody>
-        </table>
-        <h6>Total: $<%= sum %> </h6>
+                        <% } %>
+                    </tbody>
+                </table>
+                <h6>Total: $<%= sum %> </h6>
+            </div>
         </div>
-        <div class = "button">
     </div>
-</div>
+
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

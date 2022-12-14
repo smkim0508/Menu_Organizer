@@ -10,68 +10,68 @@
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body class = "orange lighten-2">
-    <div class ="container">
-    <div class="center">
-        <div class="small_buffer"></div>
-        <div class="statement">
-        <p>User list</p>
-        <div class="small_buffer"></div>
-        </div>
-        <div class="table_font">
-        <table>
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>User</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Is Admin?</th>
-                <th>Actions</th>
-                <th>Order History</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < userlist.length; i++) { %>
-            <tr>
-                <td><%= userlist[i].user_id %></td>
-                <td><%= userlist[i].username %></td>
-                <td><%= userlist[i].email %></td>
-                <% if(userlist[i].phone == null) { %>
-                    <td>N/A</td>
-                <% }
-                else { %>
-                    <td><%= userlist[i].phone %></td>
-                <% } %>
-                <td><%= userlist[i].isAdmin %></td>
-                <td>
-                    <a class="btn-small waves-effect waves-light green" href="/admin_edit/<%=userlist[i].user_id %>/promote"><i
-                            class="material-icons right">arrow_upward</i>Promote</a>
-                    <a class="btn-small waves-effect waves-light orange" href="/admin_edit/<%=userlist[i].user_id %>/demote"><i
-                            class="material-icons right">arrow_downward</i>Demote</a>
-                    <a class="btn-small waves-effect waves-light red" href="/admin_edit/<%=userlist[i].user_id %>/delete"><i
-                        class="material-icons right">delete</i>Delete User</a>
-                </td>
-                <td>
-                    <a class="btn-small waves-effect waves-light teal" href="/history_admin/<%=userlist[i].user_id %>">
-                        <i class="material-icons">history</i>
-                    </a>
-                </td>
-            </tr>
 
-            <% } %>
-        </tbody>
-        </table>
-  
-        </div>
-        <div class = "horizontal_buffer">
-            <table>
-                <td> <a class="waves-effect waves-light btn-small" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
-                </td>
-            </table>
-        </div>
+    <div class ="container">
+        <div class="center">
+            <div class="small_buffer"></div>
+            <div class="statement">
+                <p>User list</p>
+                <div class="small_buffer"></div>
+            </div>
+            <div class="table_font">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Is Admin?</th>
+                            <th>Actions</th>
+                            <th>Order History</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < userlist.length; i++) { %>
+                        <tr>
+                            <td><%= userlist[i].user_id %></td>
+                            <td><%= userlist[i].username %></td>
+                            <td><%= userlist[i].email %></td>
+                            <% if(userlist[i].phone == null) { %>
+                                <td>N/A</td>
+                            <% }
+                            else { %>
+                                <td><%= userlist[i].phone %></td>
+                            <% } %>
+                            <td><%= userlist[i].isAdmin %></td>
+                            <td>
+                                <a class="btn-small waves-effect waves-light green" href="/admin_edit/<%=userlist[i].user_id %>/promote"><i
+                                        class="material-icons right">arrow_upward</i>Promote</a>
+                                <a class="btn-small waves-effect waves-light orange" href="/admin_edit/<%=userlist[i].user_id %>/demote"><i
+                                        class="material-icons right">arrow_downward</i>Demote</a>
+                                <a class="btn-small waves-effect waves-light red" href="/admin_edit/<%=userlist[i].user_id %>/delete"><i
+                                    class="material-icons right">delete</i>Delete User</a>
+                            </td>
+                            <td>
+                                <a class="btn-small waves-effect waves-light teal" href="/history_admin/<%=userlist[i].user_id %>">
+                                    <i class="material-icons">history</i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div class = "horizontal_buffer">
+                <table>
+                    <td> <a class="waves-effect waves-light btn-small" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
+                    </td>
+                </table>
+            </div>
         </div>
     </div>
-    </div>
+    
+    <!-- Javascript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

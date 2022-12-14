@@ -10,118 +10,112 @@
     <link rel="stylesheet" href="/styles/menu.css">
 </head>
 <body class="orange lighten-2">
-<div class="white-text">
-<div class="container">
-    <div class="section" id="orderDate">
-        <h2>Settings:</h2>
-        <form name="orderBy" method="post" id="orderBy">
-            <p>Order by:</p>
-            <div class="input-field col s4">
-                <label for="orderBy"><div class="input-color"></div></label>
-                <input type="text" name="orderBy" class="validate" value="<%= settings.orderBy %>" data-length="25" color="white" required>
+    <div class="white-text">
+        <div class="container">
+            <div class="section" id="orderDate">
+                <h2>Settings:</h2>
+                <form name="orderBy" method="post" id="orderBy">
+                    <p>Order by:</p>
+                    <div class="input-field col s4">
+                        <label for="orderBy"><div class="input-color"></div></label>
+                        <input type="text" name="orderBy" class="validate" value="<%= settings.orderBy %>" data-length="25" color="white" required>
+                    </div>
+                    <p>Announcement:</p>
+                    <div class="input-field col s4">
+                        <label for="announcement"><div class="input-color"></div></label>
+                        <input type="text" name="announcement" class="validate" value="<%= settings.announcement %>" data-length="500" color="white" required>
+                    </div>
+                    <p>Week:</p>
+                    <div class="input-field col s4">
+                        <label for="curr_week"><div class="input-color"></div></label>
+                        <input type="number" name="curr_week" class="validate" value="<%= settings.curr_week %>" color="white" required>
+                    </div>
+                    <button class="btn waves-effect waves-light green" type="submit">
+                        <i class="material-icons right">send</i>Update Settings
+                    </button>
+                </form>
             </div>
-            <p>Announcement:</p>
-            <div class="input-field col s4">
-                <label for="announcement"><div class="input-color"></div></label>
-                <input type="text" name="announcement" class="validate" value="<%= settings.announcement %>" data-length="500" color="white" required>
+            <div class="section" id="MenuList">
+                <h2>Edit Menu:</h2>
+                <table>
+                    <div class = "center">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Calories</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(let i = 0; i < menu.length; i++) { %>
+                            <tr>
+                                <td><%= menu[i].menu_item %></td>
+                                <td>$<%= menu[i].price %></td>
+                                <td><%= menu[i].calories %></td>
+                                <td><%= menu[i].description %></td>
+                                <td><%= menu[i].numAvail %></td>
+                                <td>
+                                    <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=menu[i].menu_id %>"><i
+                                            class="material-icons right">edit</i>Edit</a>
+                                    <a class="btn-small waves-effect waves-light red" href="/edit/item/<%=menu[i].menu_id %>/delete"><i
+                                            class="material-icons right">delete</i>Delete</a>
+                                </td>
+                            </tr>
+
+                            <% } %>
+
+                        </tbody>
+                    </div>
+                </table>
             </div>
-            <p>Week:</p>
-            <div class="input-field col s4">
-                <label for="curr_week"><div class="input-color"></div></label>
-                <input type="number" name="curr_week" class="validate" value="<%= settings.curr_week %>" color="white" required>
+            <div class="section" id="EditMenu">
+                <h2>Add New Menu Item:</h2>
+                <!-- form here -->
+                <form class="col s12" method="post" id="editMenu">
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <label for="menu_item"><div class="input-color">Item Name</div></label>
+                            <input type="text" name="menu" class="validate" data-length="100" color="white" required>
+                        </div>
+                        <div class="input-field col s2">
+                            <label for="price"><div class="input-color">Price ($)</div></label>
+                            <input type="number" name="price" class="validate" value="5" required>
+                        </div>
+                        <div class="input-field col s2">
+                            <label for="calories"><div class="input-color">Calories (Kcal)</div></label>
+                            <input type="number" name="calories" class="validate" value="100" required>
+                        </div>
+                        <div class="input-field col s2">
+                            <label for="numAvail"><div class="input-color">Available Quantity</div></label>
+                            <input type="number" name="numAvail" class="validate" value="5" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="description"><div class="input-color">Item Description</div></label>
+                            <input type="text" name="description" class="validate" data-length="250" color="white">
+                        </div>
+                    </div>
+                    <button class="btn waves-effect waves-light green" type="submit">
+                        <i class="material-icons right">send</i>Add Item to Menu
+                    </button>
+                </form>
             </div>
-            <button class="btn waves-effect waves-light green" type="submit">
-                <i class="material-icons right">send</i>Update Settings</button>
-        </form>
-
-    </div>
-    <div class="section" id="MenuList">
-        <h2>Edit Menu:</h2>
-    <table>
-        <div class = "center">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Price</th>
-                <th>Calories</th>
-                <th>Description</th>
-                <th>Qty</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < menu.length; i++) { %>
-            <tr>
-                <td><%= menu[i].menu_item %></td>
-                <td>$<%= menu[i].price %></td>
-                <td><%= menu[i].calories %></td>
-                <td><%= menu[i].description %></td>
-                <td><%= menu[i].numAvail %></td>
-                <td>
-                    <a class="btn-small waves-effect waves-light teal" href="/edit/item/<%=menu[i].menu_id %>"><i
-                            class="material-icons right">edit</i>Edit</a>
-                    <a class="btn-small waves-effect waves-light red" href="/edit/item/<%=menu[i].menu_id %>/delete"><i
-                            class="material-icons right">delete</i>Delete</a>
-                </td>
-            </tr>
-
-            <% } %>
-
-        </tbody>
+            <div class = "horizontal_buffer">
+                <table>
+                    <td>
+                        <a class="waves-effect waves-light btn-small" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
+                    </td>
+                </table>
+            </div>
         </div>
-    </table>
     </div>
-    <div class="section" id="EditMenu">
-        <h2>Add New Menu Item:</h2>
-        <!-- form here -->
-        <form class="col s12" method="post" id="editMenu">
-            <div class="row">
-                <div class="input-field col s6">
-                
-                    <label for="menu_item"><div class="input-color">Item Name</div></label>
-                    <input type="text" name="menu" class="validate" data-length="100" color="white" required>
 
-                </div>
-                <div class="input-field col s2">
-                
-                    <label for="price"><div class="input-color">Price ($)</div></label>
-                    <input type="number" name="price" class="validate" value="5" required>
-                    
-                </div>
-                <div class="input-field col s2">
-                
-                    <label for="calories"><div class="input-color">Calories (Kcal)</div></label>
-                    <input type="number" name="calories" class="validate" value="100" required>
-                    
-                </div>
-                <div class="input-field col s2">
-                
-                    <label for="numAvail"><div class="input-color">Available Quantity</div></label>
-                    <input type="number" name="numAvail" class="validate" value="5" required>
-                    
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s12">
-                    <label for="description"><div class="input-color">Item Description</div></label>
-                    <input type="text" name="description" class="validate" data-length="250" color="white">
-                </div>
-            </div>
-            <button class="btn waves-effect waves-light green" type="submit">
-                <i class="material-icons right">send</i>Add Item to Menu</button>
-        </form>
-    </div>
-    <div class = "horizontal_buffer">
-        <table>
-            <td> <a class="waves-effect waves-light btn-small" href="/admin"><i class="material-icons right">arrow_back</i>return</a>
-            </td>
-        </table>
-    </div>
-    </div>
-</div>
-
-
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script> M.AutoInit();</script>
-</div>
+
 </body>
 </html>

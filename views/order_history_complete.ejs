@@ -11,88 +11,87 @@
 </head>
 <body class = "orange lighten-2">
     <div class ="container">
-    <div class="center">
-        <div class="small_buffer"></div>
-        <div class="statement">
-        <p style="margin-bottom: 0">Order History:</p>
+        <div class="center">
+            <div class="small_buffer"></div>
+            <div class="statement">
+                <p style="margin-bottom: 0">Order History:</p>
+                <ul class="right">
+                    <li><a class="dropdown-trigger btn teal" data-target="sort">
+                        <% if (sort_val == 0) { %>
+                            all
+                        <% }
+                        else { %>
+                        Week <%= sort_val %>
+                        <% } %>
+                        <i class="material-icons right">arrow_drop_down</i>
+                    </a></li>
+                </ul>
+                <ul class="dropdown-content" id="sort">
+                    <li><a href="history_admin_complete/0">all</a></li>
+                    <% for (let i=0; i<sort.length; i++) {
+                        if (sort[i].sort == 0) { %>
+                        <% } 
+                        else { %>
+                        <li><a href="history_admin_complete/<%= sort[i].sort %>"><%= sort[i].sort %></a></li>
+                        <% } %>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="small_buffer"></div>
+            <div class="table_font">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Index</th>
+                            <th>Week</th>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Phone #</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Requests</th>
+                            <th>Completed?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < history.length; i++) { %>
+                        <tr>
+                            <td><%= i+1 %></td>
+                            <td><%= history[i].sort %></td>
+                            <td><%= history[i].date %></td>
+                            <td><%= history[i].username %></td>
+                            <td><%= history[i].email%></td>
+                            <% if(history[i].phone == null) { %>
+                                <td>N/A</td>
+                            <% }
+                            else { %>
+                                <td><%= history[i].phone %></td>
+                            <% } %>
+                            <td><%= history[i].item %></td>
+                            <td><%= history[i].quantity %></td>
+                            <td><%= history[i].requests %></td>
+                            <% if(history[i].isComplete == 1) { %>
+                                <td><a class="waves-effect waves-light btn-small green" href="/history_admin_complete/<%= history[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
+                            <% }
+                            else { %>
+                                <td><a class="waves-effect waves-light btn-small red" href="/history_admin_complete/<%= history[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
+                            <% } %>
+                        </tr>
 
-        <ul class="right">
-            <li><a class="dropdown-trigger btn teal" data-target="sort">
-                <% if (sort_val == 0) { %>
-                    all
-                <% }
-                else { %>
-                Week <%= sort_val %>
-                <% } %>
-                <i class="material-icons right">arrow_drop_down</i>
-            </a></li>
-        </ul>
-
-        <ul class="dropdown-content" id="sort">
-            <li><a href="history_admin_complete/0">all</a></li>
-            <% for (let i=0; i<sort.length; i++) {
-                if (sort[i].sort == 0) { %>
-                <% } 
-                else { %>
-                <li><a href="history_admin_complete/<%= sort[i].sort %>"><%= sort[i].sort %></a></li>
-                <% } %>
-            <% } %>
-        </ul>
-
-        </div>
-        <div class="small_buffer"></div>
-        <div class="table_font">
-        <table>
-        <thead>
-            <tr>
-                <th>Index</th>
-                <th>Week</th>
-                <th>Date</th>
-                <th>User</th>
-                <th>Email</th>
-                <th>Phone #</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Requests</th>
-                <th>Completed?</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < history.length; i++) { %>
-            <tr>
-                <td><%= i+1 %></td>
-                <td><%= history[i].sort %></td>
-                <td><%= history[i].date %></td>
-                <td><%= history[i].username %></td>
-                <td><%= history[i].email%></td>
-                <% if(history[i].phone == null) { %>
-                    <td>N/A</td>
-                <% }
-                else { %>
-                    <td><%= history[i].phone %></td>
-                <% } %>
-                <td><%= history[i].item %></td>
-                <td><%= history[i].quantity %></td>
-                <td><%= history[i].requests %></td>
-                <% if(history[i].isComplete == 1) { %>
-                    <td><a class="waves-effect waves-light btn-small green" href="/history_admin_complete/<%= history[i].history_id %>/order_not_completed"><i class="material-icons right">arrow_drop_down</i>Y</a></td>
-                <% }
-                else { %>
-                    <td><a class="waves-effect waves-light btn-small red" href="/history_admin_complete/<%= history[i].history_id %>/order_completed"><i class="material-icons right">arrow_drop_up</i>N</a></td>
-                <% } %>
-            </tr>
-
-            <% } %>
-        </tbody>
-        </table>
-        <div class = "horizontal_buffer">
-            <table>
-                <td> <a class="waves-effect waves-light btn-large teal" href="/admin"><i class="material-icons right">arrow_back</i>return</a></td>
-            </table>
-        </div>
+                        <% } %>
+                    </tbody>
+                </table>
+                <div class = "horizontal_buffer">
+                    <table>
+                        <td><a class="waves-effect waves-light btn-large teal" href="/admin"><i class="material-icons right">arrow_back</i>return</a></td>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    </div>
+
+    <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 

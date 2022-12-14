@@ -11,115 +11,98 @@
 </head>
 <body class="orange lighten-2">
     <div class="container">
-    <div class="white-text">
-        <div class="section" id="details">
-            <div class="row">
-            <h2> Menu Details: </h2>
-            </div>
-            <div class="row">
-                <div class="item-image">
-                <img src="/images/<%= detail.menu_item.toLowerCase() %>.jpg" width="331" height="400" alt="<%= detail.menu_item %>">
+        <div class="white-text">
+            <div class="section" id="details">
+                <div class="row">
+                    <h2> Menu Details: </h2>
                 </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        
-                        <td><b>Menu Name</b></td>
-                        <td><b>Price</b></td>
-                        <td><b>Calories (per item)</b></td>
-                        <td><b>Available Qty</b></td>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <!-- <td>Hamburger</td> -->
-                        <td><%= detail.menu_item %></td>
-                        <td>$<%= detail.price %></td>
-                        <td><%= detail.calories %> kcal</td>
-                        <td><%= detail.numAvail %></td>
-                    </tr>
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        <td valign="top"><div class = "description"><b>Description</b></div></td>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    <td><%= detail.description %></td>
-                </tbody>
-            </table>
-        </div>
-       
-        <div class="section" id="orderEdit">
-            <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
-                <i class="material-icons right">edit</i>Edit
-            </a>
-            <a class="btn-large waves-effect waves-light red middle" href="/edit/item/<%= detail.menu_id %>/delete">
-                <i class="material-icons right">delete</i>Delete Order
-            </a>
-            <a class="btn-large waves-effect waves-light blue right" href="/edit"> 
-                <i class="material-icons right">keyboard_backspace</i>Return
-            </a>
-        </div>
-
-        <div class="modal" id="itemEdit">
-
-            <div class="modal-content">
-                <div class="black-text">
-                <h4>Edit Order:</h4>
+                <div class="row">
+                    <div class="item-image">
+                        <img src="/images/<%= detail.menu_item.toLowerCase() %>.jpg" width="331" height="400" alt="<%= detail.menu_item %>">
+                    </div>
                 </div>
-                  <!-- form here -->
-                <form method="post" action="/edit/item/<%= detail.menu_id %>"> 
-                    <!-- <div class="item-image">
-                        <img src="/images/burger_image.jpg" alt="burger">
-                    </div> -->
-                    <div class="row">
-                    
-                        <div class="input-field col s6">
-                            <label for="menu">Menu Name:</label>
-                            <input type="text" name="menu" value="<%= detail.menu_item %>" data-length="100" required>
-                        </div>
-
-                        <div class="input-field col s2">
-                            <label for="price">Price:</label>
-                            <input type="number" name="price" value="<%= detail.price %>" required>
-                        </div>
-
-                        <div class="input-field col s2">
-                            <label for="calories">Calories:</label>
-                            <input type="number" name="calories" value="<%= detail.calories %>" required>
-                        </div>
-                        <div class="input-field col s2">
-                            <label for="numAvail">Qty</label>
-                            <input type="number" name="numAvail" value="<%= detail.numAvail %>" required>
-                        </div>
+                <table>
+                    <thead>
+                        <tr> 
+                            <td><b>Menu Name</b></td>
+                            <td><b>Price</b></td>
+                            <td><b>Calories (per item)</b></td>
+                            <td><b>Available Qty</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><%= detail.menu_item %></td>
+                            <td>$<%= detail.price %></td>
+                            <td><%= detail.calories %> kcal</td>
+                            <td><%= detail.numAvail %></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <td valign="top"><div class = "description"><b>Description</b></div></td> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <td><%= detail.description %></td>
+                    </tbody>
+                </table>
+            </div>
+            <div class="section" id="orderEdit">
+                <a class="btn-large waves-effect waves-light orange left modal-trigger" href="#itemEdit">
+                    <i class="material-icons right">edit</i>Edit
+                </a>
+                <a class="btn-large waves-effect waves-light red middle" href="/edit/item/<%= detail.menu_id %>/delete">
+                    <i class="material-icons right">delete</i>Delete Order
+                </a>
+                <a class="btn-large waves-effect waves-light blue right" href="/edit"> 
+                    <i class="material-icons right">keyboard_backspace</i>Return
+                </a>
+            </div>
+            <div class="modal" id="itemEdit">
+                <div class="modal-content">
+                    <div class="black-text">
+                        <h4>Edit Order:</h4>
                     </div>
-
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <label for="description">Description:</label>
-                            <input type="text" name="description" value="<%= detail.description %>" data-length="250">
+                    <!-- form here -->
+                    <form method="post" action="/edit/item/<%= detail.menu_id %>"> 
+                        <!-- <div class="item-image">
+                            <img src="/images/burger_image.jpg" alt="burger">
+                        </div> -->
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <label for="menu">Menu Name:</label>
+                                <input type="text" name="menu" value="<%= detail.menu_item %>" data-length="100" required>
+                            </div>
+                            <div class="input-field col s2">
+                                <label for="price">Price:</label>
+                                <input type="number" name="price" value="<%= detail.price %>" required>
+                            </div>
+                            <div class="input-field col s2">
+                                <label for="calories">Calories:</label>
+                                <input type="number" name="calories" value="<%= detail.calories %>" required>
+                            </div>
+                            <div class="input-field col s2">
+                                <label for="numAvail">Qty</label>
+                                <input type="number" name="numAvail" value="<%= detail.numAvail %>" required>
+                            </div>
                         </div>
-                    
-                    </div>
-  
-                    <!-- <div class="modal-footer"></div> -->
-                        <button class="btn waves-effect waves-light " type="submit"><i
-                                class="material-icons right">send</i>Change</button>
-
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <label for="description">Description:</label>
+                                <input type="text" name="description" value="<%= detail.description %>" data-length="250">
+                            </div>
+                        </div>
+                        <button class="btn waves-effect waves-light " type="submit"><i class="material-icons right">send</i>Change</button>
                         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Exit</a>
-                    <!-- </div> -->
-                </form>
+                    </form>
+                </div>
             </div>
-
-        </div>
         </div>
     </div>
+    
     <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 

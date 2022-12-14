@@ -11,52 +11,53 @@
 </head>
 <body class = "teal lighten-2">
     <div class ="container">
-    <div class="center">
-        <div class="small_buffer"></div>
-        <div class="statement">
-        <p><%= history[0].username %>'s order history:</p>
-        </div>
-        <div class="small_buffer"></div>
-        <div class="table_font">
-        <table>
-        <thead>
-            <tr>
-                <th>Week</th>
-                <th>Date</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Requests</th>
-                <th>Completed?</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for(let i = 0; i < history.length; i++) { %>
-            <tr>
-                <td><%= history[i].sort %></td>
-                <td><%= history[i].date %></td>
-                <td><%= history[i].item %></td>
-                <td><%= history[i].quantity %></td>
-                <td><%= history[i].requests %></td>
-                <% if(history[i].isComplete == 1) { %>
-                    <td>Y</td>
-                <% }
-                else { %>
-                    <td>N</td>
-                <% } %>
-            </tr>
+        <div class="center">
+            <div class="small_buffer"></div>
+            <div class="statement">
+                <p><%= history[0].username %>'s order history:</p>
+            </div>
+            <div class="small_buffer"></div>
+            <div class="table_font">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Requests</th>
+                            <th>Completed?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i < history.length; i++) { %>
+                        <tr>
+                            <td><%= history[i].sort %></td>
+                            <td><%= history[i].date %></td>
+                            <td><%= history[i].item %></td>
+                            <td><%= history[i].quantity %></td>
+                            <td><%= history[i].requests %></td>
+                            <% if(history[i].isComplete == 1) { %>
+                                <td>Y</td>
+                            <% }
+                            else { %>
+                                <td>N</td>
+                            <% } %>
+                        </tr>
 
-            <% } %>
-        </tbody>
-        </table>
-
-        <div class = "horizontal_buffer">
-            <table>
-                <td> <a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>return</a></td>
-            </table>
-        </div>
+                        <% } %>
+                    </tbody>
+                </table>
+                <div class = "horizontal_buffer">
+                    <table>
+                        <td><a class="waves-effect waves-light btn-large red" href="/menu"><i class="material-icons right">arrow_back</i>return</a></td>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    </div>
+
+    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>
