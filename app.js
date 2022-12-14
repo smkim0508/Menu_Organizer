@@ -842,6 +842,8 @@ const update_phone_sql =`
         email = ?
 `
 
+
+
 // renders the receipt during the checkout page as confirmation if the order for the week has not been filled yet
 app.get("/checkout", requiresAuth(), async (req, res) => {
     try {
@@ -862,6 +864,7 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
         let temp1 = [];
         let temp2 = [];
         let temp3 = [];
+        let void_check = 0;
 
         for (let i=0; i<receipt.length; i++) {
             let [ordered, _o] = await db.execute(check_num_ordered_sql, [receipt[i].menu_item, req.oidc.user.email]);
@@ -875,6 +878,7 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
                 temp1[i] = receipt[i].menu_item; // saves the current name of order for each overflowed
                 temp2[i] = receipt[i].numAvail - numIncomplete[i]; // saves current number of orders available for each overflowed
             }
+            void_check += ordered[0].sum;
         }
 
         for (i=0; i<menu.length; i++) {
@@ -889,6 +893,9 @@ app.get("/checkout", requiresAuth(), async (req, res) => {
             }
         }
 
+        if (void_check == 0) {
+            res.render("cart_empty");
+        }
         if (temp1.length > 0 && temp3.length == 0) {
             res.redirect("/insufficient");
         }
